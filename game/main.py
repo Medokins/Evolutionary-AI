@@ -1,16 +1,13 @@
-from turtle import left
 import pygame
 import os
-import time
-
-from torch import chain_matmul
-from transformers import PYTORCH_PRETRAINED_BERT_CACHE
 
 PLAYER_IMGS = pygame.image.load(os.path.join('Images', 'Character.png'))
 GROUND_IMGS = pygame.image.load(os.path.join('Images', 'Character.png'))
 WIDTH, HEIGHT = 1920, 1080 #2560, 1440
 FPS = 60
-PLAYER_SIZE = (512,512)
+JUMP_HEIGHT_MAX = 5
+
+PLAYER_SIZE = (256,256)
 PLAYER_IMG = pygame.transform.scale(PLAYER_IMGS, PLAYER_SIZE)
 
 pygame.display.set_caption("Jump King")
@@ -22,7 +19,6 @@ def draw_window(x, y):
     pygame.display.update()
 
 def main():
-    channel_time = 0
     run = True
     clock = pygame.time.Clock()
     jumpKing = Player(960, 540)
@@ -33,22 +29,20 @@ def main():
             if event.type == pygame.QUIT:
                 run = False
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_SPACE and channel_time == 0:
-                    channel_time = time.time()
+                if event.key == pygame.K_SPACE and not jumpKing.isJumping:
+                    channel_time = pygame.time.get_ticks()
             if event.type == pygame.KEYUP:
-                if event.key == pygame.K_SPACE:
-                    channel_time = 3*(time.time() - channel_time)
-                    if channel_time > 3: channel_time = 3
-                    jump_height = channel_time
+                if event.key == pygame.K_SPACE and not jumpKing.isJumping:
+                    channel_time = pygame.time.get_ticks() - channel_time
+                    jump_height = min(JUMP_HEIGHT_MAX, channel_time // 40)
                     jumpKing.isJumping = True
-                    channel_time = 0
 
         userInput = pygame.key.get_pressed()
-
         if userInput[pygame.K_LEFT] or userInput[pygame.K_a] and jumpKing.x > 0:
             jumpKing.moveLeft()
         if userInput[pygame.K_RIGHT] or userInput[pygame.K_d] and jumpKing.x < WIDTH - PLAYER_SIZE[0]:
             jumpKing.moveRight()
+
         if jumpKing.isJumping:
             jumpKing.jump(jump_height)
 
@@ -62,24 +56,22 @@ class Player:
     def __init__(self, x, y):
         self.x = x
         self.y = y
-        self.vel_y = 20
-        self.vel_x = 10
+        self.vel_y = 10
+        self.vel_x = 20
         self.isJumping = False
 
 
     def jump(self, jump_height):      
         '''
-        makes player jump when spacebar is pressed
-        '''
+        makes player jump when spacebar is pressed, height of jump is controlled by the time space bar is being pressed
+        ''' 
         self.y -= self.vel_y * jump_height
-        if jump_height > 1:
-            self.vel_y -= 1
-        else:
-            self.vel_y -= 2
-        if self.vel_y < -20:
-            self.vel_y = 20
+        self.vel_y -= 1
+        if self.vel_y < -10:
+            self.vel_y = 10
             self.isJumping = False
             jump_height = 0
+
     
     def moveRight(self):
         '''
