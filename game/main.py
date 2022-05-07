@@ -1,14 +1,5 @@
 import pygame
-import os
-
-PLAYER_IMGS = pygame.image.load(os.path.join('Images', 'Character.png'))
-GROUND_IMGS = pygame.image.load(os.path.join('Images', 'Character.png'))
-WIDTH, HEIGHT = 1920, 1080 #2560, 1440
-FPS = 60
-JUMP_HEIGHT_MAX = 5
-
-PLAYER_SIZE = (256,256)
-PLAYER_IMG = pygame.transform.scale(PLAYER_IMGS, PLAYER_SIZE)
+from settings import *
 
 pygame.display.set_caption("Jump King")
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -57,7 +48,7 @@ class Player:
         self.x = x
         self.y = y
         self.vel_y = 10
-        self.vel_x = 20
+        self.vel_x = 10
         self.isJumping = False
 
 
@@ -66,7 +57,7 @@ class Player:
         makes player jump when spacebar is pressed, height of jump is controlled by the time space bar is being pressed
         ''' 
         self.y -= self.vel_y * jump_height
-        self.vel_y -= 1
+        self.vel_y -= 0.5
         if self.vel_y < -10:
             self.vel_y = 10
             self.isJumping = False
