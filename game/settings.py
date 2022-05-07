@@ -1,10 +1,26 @@
-import pygame
-import os
+level_map = [
+'                                ',
+'                                ',
+'                                ',
+'                                ',
+'                                ',
+'                                ',
+'          XXXXXX                ',
+'                                ',
+'                                ',
+'                      X         ',
+'                      XXXXX   XX',
+'                      XXXX     X',
+'     X    XXXXXXXXX   XXX       ',
+'    XX                XX        ',
+'   XXX                X         ',
+'  XXXX                X         ',
+' XXXXX                X         ',
+'XXXXXX                X         ']
 
-PLAYER_IMGS = pygame.image.load(os.path.join('game', 'Images', 'Character.png'))
-GROUND_IMGS = pygame.image.load(os.path.join('game', 'Images', 'Character.png'))
-WIDTH, HEIGHT = 1920, 1080 #2560, 1440
+tile_size = 1080 / len(level_map)
+print(tile_size)
+WIDTH, HEIGHT = 1920, 1080
 FPS = 60
 JUMP_HEIGHT_MAX = 3
 PLAYER_SIZE = (128,128)
-PLAYER_IMG = pygame.transform.scale(PLAYER_IMGS, PLAYER_SIZE)
