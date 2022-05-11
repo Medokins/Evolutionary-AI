@@ -1,48 +1,95 @@
-import pygame, sys
+import pygame as pg
 from settings import *
-from level import Level
-from player import Player, PLAYER_IMG
+from sprites import *
 
-pygame.init()
-WIN = pygame.display.set_mode((WIDTH, HEIGHT))
-clock = pygame.time.Clock()
-level = Level(level_map, WIN)
+class Game:
+    def __init__(self):
+        pg.init()
+        pg.mixer.init()
+        self.screen = pg.display.set_mode((WIDTH, HEIGHT))
+        pg.display.set_caption(TITLE)
+        self.clock = pg.time.Clock()
+        self.running = True
+        self.channelTime = 0
+        self.isChanneling = False
+        self.left_flag = False
+        self.right_flag = False
 
-def draw_window(x, y):
-    WIN.fill((26,26,26))
-    WIN.blit(PLAYER_IMG, (x, y))
-    level.run()
-    pygame.display.update()
+    def new(self):
+        # start a new game
+        self.all_sprites = pg.sprite.Group()
+        self.platforms = pg.sprite.Group()
+        self.player = Player(self)
+        self.all_sprites.add(self.player)
+        for plat in PLATFORM_LIST:
+            p = Platform(*plat)
+            self.all_sprites.add(p)
+            self.platforms.add(p)
+        self.run()
 
-def main():
-    jumpKing = Player(960, 540)
+    def run(self):
+        self.playing = True
+        while self.playing:
+            self.clock.tick(FPS)
+            self.events()
+            self.update(self.isChanneling)
+            self.draw()
 
-    while True:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
+    def update(self, isChanneling):
+        self.all_sprites.update(isChanneling)
+        if self.player.vel.y > 0:
+            hits = pg.sprite.spritecollide(self.player, self.platforms, False)
+            if hits:
+                self.player.pos.y = hits[0].rect.top
+                self.player.vel.y = 0
 
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_SPACE and not jumpKing.isJumping:
-                    channel_time = pygame.time.get_ticks()
-            if event.type == pygame.KEYUP:
-                if event.key == pygame.K_SPACE and not jumpKing.isJumping:
-                    channel_time = pygame.time.get_ticks() - channel_time
-                    jump_height = min(JUMP_HEIGHT_MAX, channel_time // 40)
-                    jumpKing.isJumping = True
+    def events(self):
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
+                if self.playing:
+                    self.playing = False
+                self.running = False
 
-        userInput = pygame.key.get_pressed()
-        if userInput[pygame.K_LEFT] or userInput[pygame.K_a] and jumpKing.x > 0:
-            jumpKing.moveLeft()
-        if userInput[pygame.K_RIGHT] or userInput[pygame.K_d] and jumpKing.x < WIDTH - PLAYER_SIZE[0]:
-            jumpKing.moveRight()
+            if event.type == pg.KEYDOWN:
+                if event.key == pg.K_SPACE:
+                    self.channelTime = pg.time.get_ticks()
+                    self.isChanneling = True
+                if event.key == pg.K_a or event.key == pg.K_LEFT and self.isChanneling:
+                    self.left_flag = True
+                if event.key == pg.K_d or event.key == pg.K_RIGHT and self.isChanneling:
+                    self.right_flag = True
 
-        if jumpKing.isJumping:
-            jumpKing.jump(jump_height)
-            
-        draw_window(jumpKing.x, jumpKing.y)
-        clock.tick(FPS)
+            if event.type == pg.KEYUP:
+                if event.key == pg.K_SPACE and self.left_flag:
+                    self.channelTime = pg.time.get_ticks() - self.channelTime
+                    jump_height = min(20, self.channelTime // 15)
+                    self.player.jumpLeft(jump_height)
+                    self.left_flag = False
+                    self.right_flag = False
+                    self.isChanneling = False
+                elif event.key == pg.K_SPACE and self.right_flag:
+                    self.channelTime = pg.time.get_ticks() - self.channelTime
+                    jump_height = min(20, self.channelTime // 15)
+                    self.player.jumpRight(jump_height)
+                    self.left_flag = False
+                    self.right_flag = False
+                    self.isChanneling = False
+                elif event.key == pg.K_SPACE:
+                    self.channelTime = pg.time.get_ticks() - self.channelTime
+                    jump_height = min(20, self.channelTime // 15)
+                    self.player.jump(jump_height)
+                    self.isChanneling = False
+                    self.left_flag = False
+                    self.right_flag = False
 
-if __name__ == "__main__":
-    main()
+    def draw(self):
+        self.screen.fill((23, 23, 23))
+        self.all_sprites.draw(self.screen)
+        pg.display.flip()
+
+
+g = Game()
+while g.running:
+    g.new()
+
+pg.quit()
