@@ -4,6 +4,7 @@ from sprites import *
 
 class Game:
     def __init__(self):
+        # initialize game window, etc
         pg.init()
         pg.mixer.init()
         self.screen = pg.display.set_mode((WIDTH, HEIGHT))
@@ -28,6 +29,7 @@ class Game:
         self.run()
 
     def run(self):
+        # Game Loop
         self.playing = True
         while self.playing:
             self.clock.tick(FPS)
@@ -36,7 +38,9 @@ class Game:
             self.draw()
 
     def update(self, isChanneling):
+        # Game Loop - Update
         self.all_sprites.update(isChanneling)
+        # check if player hits a platform - only if falling
         if self.player.vel.y > 0:
             hits = pg.sprite.spritecollide(self.player, self.platforms, False)
             if hits:
@@ -44,6 +48,10 @@ class Game:
                 self.player.vel.y = 0
 
     def events(self):
+        # Game Loop - events
+        hits = pg.sprite.spritecollide(self.player, self.platforms, False)
+        if not hits: self.player.isJumping = True
+        else: self.player.isJumping = False
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 if self.playing:
@@ -62,34 +70,41 @@ class Game:
             if event.type == pg.KEYUP:
                 if event.key == pg.K_SPACE and self.left_flag:
                     self.channelTime = pg.time.get_ticks() - self.channelTime
-                    jump_height = min(20, self.channelTime // 15)
-                    self.player.jumpLeft(jump_height)
+                    self.player.jump_height = min(25, self.channelTime // 15)
+                    self.player.jumpLeft()
                     self.left_flag = False
                     self.right_flag = False
                     self.isChanneling = False
                 elif event.key == pg.K_SPACE and self.right_flag:
                     self.channelTime = pg.time.get_ticks() - self.channelTime
-                    jump_height = min(20, self.channelTime // 15)
-                    self.player.jumpRight(jump_height)
+                    self.player.jump_height = min(25, self.channelTime // 15)
+                    self.player.jumpRight()
                     self.left_flag = False
                     self.right_flag = False
                     self.isChanneling = False
                 elif event.key == pg.K_SPACE:
                     self.channelTime = pg.time.get_ticks() - self.channelTime
-                    jump_height = min(20, self.channelTime // 15)
-                    self.player.jump(jump_height)
-                    self.isChanneling = False
+                    self.player.jump_height = min(25, self.channelTime // 15)
+                    self.player.jump()
                     self.left_flag = False
                     self.right_flag = False
+                    self.isChanneling = False
 
     def draw(self):
-        self.screen.fill((23, 23, 23))
+        self.screen.fill((23,23,23))
         self.all_sprites.draw(self.screen)
         pg.display.flip()
 
+    def show_start_screen(self):
+        pass
+
+    def show_go_screen(self):
+        pass
 
 g = Game()
+g.show_start_screen()
 while g.running:
     g.new()
+    g.show_go_screen()
 
 pg.quit()
