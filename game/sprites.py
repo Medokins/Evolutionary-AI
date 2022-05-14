@@ -8,42 +8,37 @@ class Player(pg.sprite.Sprite):
         pg.sprite.Sprite.__init__(self)
         self.game = game
         self.image = pg.Surface((30, 40))
-        self.image.fill((255,0,0))
+        self.image.fill((0, 255, 255))
         self.rect = self.image.get_rect()
         self.rect.center = (WIDTH / 2, HEIGHT / 2)
         self.pos = vec(WIDTH / 2, HEIGHT / 2)
         self.vel = vec(0, 0)
         self.acc = vec(0, 0)
         self.isJumping = False
+        self.jump_height = 10
 
-    def jump(self, jump_height):
+    def jump(self):
         self.rect.x += 1
         hits = pg.sprite.spritecollide(self, self.game.platforms, False)
         self.rect.x -= 1
         if hits:
-            self.vel.y = -jump_height
-            print("Up")
-            self.isJumping = True
+            self.vel.y = -self.jump_height
     
-    def jumpRight(self, jump_height):
+    def jumpRight(self):
         self.rect.x += 1
         hits = pg.sprite.spritecollide(self, self.game.platforms, False)
         self.rect.x -= 1
         if hits:
-            self.vel.y = -jump_height
-            self.vel.x = 10
-            self.isJumping = True
-            print("Right")
+            self.vel.y = -self.jump_height
+            self.vel.x = 7
 
-    def jumpLeft(self, jump_height):
+    def jumpLeft(self):
         self.rect.x += 1
         hits = pg.sprite.spritecollide(self, self.game.platforms, False)
         self.rect.x -= 1
         if hits:
-            self.vel.y = -jump_height
-            self.vel.x = -10
-            self.isJumping = True
-            print("Left")
+            self.vel.y = -self.jump_height
+            self.vel.x = -7
 
 
     def update(self, isChanneling):
@@ -58,8 +53,6 @@ class Player(pg.sprite.Sprite):
         # apply friction
         self.acc.x += self.vel.x * PLAYER_FRICTION
         # equations of motion
-        if pg.sprite.spritecollide(self, self.game.platforms, False):
-            self.isJumping = False
 
         if self.isJumping: #update y but don't update x
             self.vel.y += self.acc.y
@@ -76,7 +69,7 @@ class Platform(pg.sprite.Sprite):
     def __init__(self, x, y, w, h):
         pg.sprite.Sprite.__init__(self)
         self.image = pg.Surface((w, h))
-        self.image.fill((0,255,0))
+        self.image.fill((0, 255, 0))
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
