@@ -138,8 +138,8 @@ class Platform(pg.sprite.Sprite):
         self.groups = game.all_sprites, game.platforms
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
-        images = [self.game.spritesheet.get_image(0, 288, 380, 94),
-                  self.game.spritesheet.get_image(213, 1662, 201, 100)]
+        images = [self.game.spritesheet[0].get_image(0, 0, 224, 40),
+                  self.game.spritesheet[1].get_image(0, 0, 112, 20)]
         self.image = choice(images)
         self.image.set_colorkey(WHITE)
         self.rect = self.image.get_rect()
