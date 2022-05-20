@@ -28,12 +28,12 @@ class Game:
             try: self.highscore = int(f.read())
             except: self.highscore = 0
 
-        # load spritesheet image
-        img_dir = path.join(self.dir, 'Images')
+        # load images
+        img_dir = path.join(self.dir, 'Images')            
 
         # load platform images
-        self.spritesheet = Spritesheet(path.join(img_dir, SPRITESHEET))              
-        self.platforms = Spritesheet(path.join(img_dir, "platforms", "platform.png"))
+        self.spritesheet = [Spritesheet(path.join(img_dir, "platforms", "platform_1.png")),
+                            Spritesheet(path.join(img_dir, "platforms", "platform_2.png"))]
 
         # load character images
         self.character_standing = [
@@ -155,14 +155,14 @@ class Game:
                     self.isChanneling = False
 
     def draw(self):
-        self.screen.fill((23,23,23))
+        self.screen.fill((LIGHTBLUE))
         self.all_sprites.draw(self.screen)
         self.draw_text(str(self.score), 22, WHITE, WIDTH / 2, 15)
         pg.display.flip()
 
     def show_start_screen(self):
         # game splash/start screen
-        self.screen.fill(BGCOLOR)
+        self.screen.fill(LIGHTBLUE)
         self.draw_text(TITLE, 48, WHITE, WIDTH / 2, HEIGHT / 4)
         self.draw_text("Arrows to move, Space to jump", 22, WHITE, WIDTH / 2, HEIGHT / 2)
         self.draw_text("Press a key to play", 22, WHITE, WIDTH / 2, HEIGHT * 3 / 4)
@@ -174,7 +174,7 @@ class Game:
         # game over/continue
         if not self.running:
             return
-        self.screen.fill(BGCOLOR)
+        self.screen.fill(LIGHTBLUE)
         self.draw_text("GAME OVER", 48, WHITE, WIDTH / 2, HEIGHT / 4)
         self.draw_text("Score: " + str(self.score), 22, WHITE, WIDTH / 2, HEIGHT / 2)
         self.draw_text("Press a key to play again", 22, WHITE, WIDTH / 2, HEIGHT * 3 / 4)
