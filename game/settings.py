@@ -1,7 +1,6 @@
-# game options/settings
 TITLE = "Jump King"
-WIDTH = 480
-HEIGHT = 600
+WIDTH = 920
+HEIGHT = 1080
 FPS = 60
 FONT_NAME = 'arial'
 HS_FILE = "highscore.txt"
@@ -18,11 +17,10 @@ PLATFORM_LAYER = 1
 POW_LAYER = 1
 
 # Starting platforms
-PLATFORM_LIST = [(0, HEIGHT - 60),
-                 (WIDTH / 2 - 50, HEIGHT * 3 / 4 - 50),
-                 (125, HEIGHT - 350),
-                 (350, 200),
-                 (175, 100)]
+PLATFORM_LIST = [(0, HEIGHT - 100),
+                 (WIDTH / 2 - 112, HEIGHT - 300),
+                 (WIDTH - 224, HEIGHT - 500),
+                 (WIDTH - 224, -100)]
 
 # define colors
 WHITE = (255, 255, 255)
