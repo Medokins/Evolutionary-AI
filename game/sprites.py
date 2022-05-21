@@ -12,7 +12,7 @@ class Spritesheet:
         # grab an image out of a larger spritesheet
         image = pg.Surface((width, height))
         image.blit(self.spritesheet, (0, 0), (x, y, width, height))
-        image = pg.transform.scale(image, (width / 2, height / 2))
+        image = pg.transform.scale(image, (width, height))
         return image
 
 class Player(pg.sprite.Sprite):
@@ -35,15 +35,15 @@ class Player(pg.sprite.Sprite):
         self.jump_height = 10
 
     def load_images(self):
-        self.standing_frames = [self.game.character_standing[0].get_image(0, 0, 128, 128),
-                                self.game.character_standing[1].get_image(0, 0, 128, 128),
-                                self.game.character_standing[2].get_image(0, 0, 128, 128)]
+        self.standing_frames = [self.game.character_standing[0].get_image(0, 0, 98, 110),
+                                self.game.character_standing[1].get_image(0, 0, 98, 110),
+                                self.game.character_standing[2].get_image(0, 0, 94, 110)]
 
         for frame in self.standing_frames:
             frame.set_colorkey(WHITE)
 
-        self.walk_frames_r = [self.game.character_standing[1].get_image(0, 0, 128, 128),
-                            self.game.character_standing[1].get_image(0, 0, 128, 128)]
+        self.walk_frames_r = [self.game.character_standing[0].get_image(0, 0, 98, 110),
+                              self.game.character_standing[1].get_image(0, 0, 98, 110)]
 
         self.walk_frames_l = []
         for frame in self.walk_frames_r:
@@ -98,6 +98,7 @@ class Player(pg.sprite.Sprite):
         if abs(self.vel.x) < 0.1: self.vel.x = 0
 
         self.pos += self.vel + 0.5 * self.acc
+
         if self.pos.x > WIDTH - 20: self.pos.x = WIDTH - 20
         if self.pos.x - 20 < 0: self.pos.x = 20
 
@@ -120,6 +121,7 @@ class Player(pg.sprite.Sprite):
                     self.image = self.walk_frames_l[self.current_frame]
                 self.rect = self.image.get_rect()
                 self.rect.bottom = bottom
+        
         # show idle animation
         if not self.jumping and not self.walking:
             if now - self.last_update > 350:
@@ -138,8 +140,9 @@ class Platform(pg.sprite.Sprite):
         self.groups = game.all_sprites, game.platforms
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
-        images = [self.game.spritesheet[0].get_image(0, 0, 224, 40),
-                  self.game.spritesheet[1].get_image(0, 0, 112, 20)]
+        images = [self.game.spritesheet[0].get_image(0, 0, 224, 40)]
+                  #self.game.spritesheet[1].get_image(0, 0, 112, 20)]
+                  
         self.image = choice(images)
         self.image.set_colorkey(WHITE)
         self.rect = self.image.get_rect()
