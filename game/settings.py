@@ -1,5 +1,5 @@
 TITLE = "Jump King"
-WIDTH = 920
+WIDTH = 1000
 HEIGHT = 1080
 FPS = 60
 FONT_NAME = 'arial'
@@ -16,11 +16,19 @@ PLAYER_LAYER = 2
 PLATFORM_LAYER = 1
 POW_LAYER = 1
 
-# Starting platforms
-PLATFORM_LIST = [(0, HEIGHT - 100),
-                 (WIDTH / 2 - 112, HEIGHT - 300),
-                 (WIDTH - 224, HEIGHT - 500),
-                 (WIDTH - 224, -100)]
+# platforms
+PLATFORM_LIST = [(0, HEIGHT - 100), (224, HEIGHT - 100), (448, HEIGHT - 100),(672, HEIGHT - 100),
+
+                (WIDTH / 2 - 112, HEIGHT - 300),
+                (WIDTH - 224, HEIGHT - 500),
+
+                (WIDTH / 2 - 112, 80),
+                (0, -300),
+                (WIDTH - 224, -700),
+                (0, -1100),
+                (WIDTH - 224, -1500),
+                (0, -1900),
+                (WIDTH - 224, -2300)]
 
 # define colors
 WHITE = (255, 255, 255)
