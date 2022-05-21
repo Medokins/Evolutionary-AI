@@ -70,17 +70,6 @@ class Game:
     def update(self):
         # Game Loop - Update
         self.all_sprites.update(self.isChanneling)
-        
-        # check if player hits a platform - only if falling
-        if self.player.vel.y > 0:
-            hits = pg.sprite.spritecollide(self.player, self.platforms, False)
-            if hits:
-                print(f"Player: {self.player.pos.y} platform: {hits[0].rect.topleft[1]}")
-                if self.player.pos.x - 5 > hits[0].rect.topleft[0] and self.player.pos.x + 5 < hits[0].rect.topright[0]:
-                    if self.player.pos.y >= hits[0].rect.topleft[1]:
-                        self.player.pos.y = hits[0].rect.top
-                        self.player.vel.y = 0
-                        self.player.jumping = False
 
         # if player reaches top 1/4 of screen
         if self.player.rect.top < HEIGHT / 4:
@@ -96,15 +85,22 @@ class Game:
             for plat in self.platforms:
                 plat.rect.y -= max(abs(self.player.vel.y), 2)
 
+        # check if player hits a platform - only if falling
+        if self.player.vel.y > 0:
+            hits = pg.sprite.spritecollide(self.player, self.platforms, False)
+            if hits:
+                if self.player.pos.x - 5 > hits[0].rect.topleft[0] and self.player.pos.x + 5 < hits[0].rect.topright[0]:
+                    if self.player.pos.y - 1.2 >= hits[0].rect.top and self.player.pos.y + 1.2 <= hits[0].rect.bottom:
+                        self.player.pos.y = hits[0].rect.top
+                        self.player.vel.y = 0
+                        self.player.jumping = False
+
         #Die!
         if self.player.rect.bottom > HEIGHT:
             for sprite in self.all_sprites:
                 sprite.rect.y -= max(self.player.vel.y, 10)
                 if sprite.rect.bottom < 0:
                     sprite.kill()
-
-        if len(self.platforms) == 0:
-            self.playing = False
 
     def events(self):
         
