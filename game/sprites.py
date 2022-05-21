@@ -3,19 +3,30 @@ from settings import *
 from random import choice
 vec = pg.math.Vector2
 
+
 class Spritesheet:
-    # utility class for loading and parsing spritesheets
+    '''
+        utility class for loading and parsing spritesheets
+    '''
     def __init__(self, filename):
+        '''
+            loads images
+        '''
         self.spritesheet = pg.image.load(filename).convert()
 
     def get_image(self, x, y, width, height):
-        # grab an image out of a larger spritesheet
+        '''
+            creates surface with spritesheet image on it
+        '''
         image = pg.Surface((width, height))
         image.blit(self.spritesheet, (0, 0), (x, y, width, height))
         image = pg.transform.scale(image, (width, height))
         return image
 
 class Player(pg.sprite.Sprite):
+    '''
+        class for running player movement/animation methods
+    '''
     def __init__(self, game):
         self._layer = PLAYER_LAYER
         self.groups = game.all_sprites
@@ -35,6 +46,9 @@ class Player(pg.sprite.Sprite):
         self.jump_height = 10
 
     def load_images(self):
+        '''
+            loads all Player images
+        '''
         self.standing_frames = [self.game.character_standing[0].get_image(0, 0, 98, 110),
                                 self.game.character_standing[1].get_image(0, 0, 98, 110),
                                 self.game.character_standing[2].get_image(0, 0, 94, 110)]
@@ -54,6 +68,9 @@ class Player(pg.sprite.Sprite):
         self.jump_frame.set_colorkey(WHITE)
 
     def jump(self):
+        '''
+            make player jump up
+        '''
         self.rect.x += 2
         hits = pg.sprite.spritecollide(self, self.game.platforms, False)
         self.rect.x -= 2
@@ -61,22 +78,32 @@ class Player(pg.sprite.Sprite):
             self.vel.y = -self.jump_height
     
     def jumpRight(self):
-        self.rect.x += 1
+        '''
+            make player jump right
+        '''
+        self.rect.x += 2
         hits = pg.sprite.spritecollide(self, self.game.platforms, False)
-        self.rect.x -= 1
+        self.rect.x -= 2
         if hits:
             self.vel.y = -self.jump_height
             self.vel.x = 7
 
     def jumpLeft(self):
-        self.rect.x += 1
+        '''
+            make player jump left
+        '''
+        self.rect.x += 2
         hits = pg.sprite.spritecollide(self, self.game.platforms, False)
-        self.rect.x -= 1
+        self.rect.x -= 2
         if hits:
             self.vel.y = -self.jump_height
             self.vel.x = -7
 
     def update(self, isChanneling):
+        '''
+            method that calls animate method, checks for player input (left/right movement)
+            and apply movement equation
+        '''
         self.animate()
         self.acc = vec(0, PLAYER_GRAV)
         keys = pg.key.get_pressed()
@@ -105,6 +132,9 @@ class Player(pg.sprite.Sprite):
         self.rect.midbottom = self.pos
 
     def animate(self):
+        '''
+            animate player movement while walking, jumping and idling
+        '''
         now = pg.time.get_ticks()
         if self.vel.x != 0: self.walking = True
         else: self.walking = False
@@ -135,7 +165,14 @@ class Player(pg.sprite.Sprite):
 
 
 class Platform(pg.sprite.Sprite):
+    '''
+        class for creating and loading random platforms
+
+    '''
     def __init__(self, game, x, y):
+        '''
+            crates platform with random image at x, y coordinate
+        '''
         self._layer = PLATFORM_LAYER
         self.groups = game.all_sprites, game.platforms
         pg.sprite.Sprite.__init__(self, self.groups)
