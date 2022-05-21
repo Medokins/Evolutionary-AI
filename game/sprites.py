@@ -40,7 +40,7 @@ class Player(pg.sprite.Sprite):
         self.image = self.standing_frames[0]
         self.rect = self.image.get_rect()
         self.rect.center = (40, HEIGHT - 100)
-        self.pos = vec(40, HEIGHT - 100)
+        self.pos = vec(64, HEIGHT - 100)
         self.vel = vec(0, 0)
         self.acc = vec(0, 0)
         self.jump_height = 10
@@ -86,7 +86,7 @@ class Player(pg.sprite.Sprite):
         self.rect.x -= 2
         if hits:
             self.vel.y = -self.jump_height
-            self.vel.x = 7
+            self.vel.x = 12
 
     def jumpLeft(self):
         '''
@@ -97,7 +97,7 @@ class Player(pg.sprite.Sprite):
         self.rect.x -= 2
         if hits:
             self.vel.y = -self.jump_height
-            self.vel.x = -7
+            self.vel.x = -12
 
     def update(self, isChanneling):
         '''
@@ -119,6 +119,9 @@ class Player(pg.sprite.Sprite):
         # if jumping than update y only
         if self.jumping:
             self.vel.y += self.acc.y
+            if abs(self.vel.y) > 40:
+                if self.vel.y > 0: self.vel.y = 40
+                else: self.vel.y = -40
         else: 
             self.vel += self.acc
 
@@ -126,8 +129,14 @@ class Player(pg.sprite.Sprite):
 
         self.pos += self.vel + 0.5 * self.acc
 
-        if self.pos.x > WIDTH - 20: self.pos.x = WIDTH - 20
-        if self.pos.x - 20 < 0: self.pos.x = 20
+        if self.jumping:
+            if self.pos.x > WIDTH - 64 or self.pos.x - 64 < 0:
+                self.vel.x = -self.vel.x
+        else:
+            if self.pos.x > WIDTH - 64:
+                self.pos.x = WIDTH - 64
+            if self.pos.x - 64 < 0:
+                self.pos.x = 64
 
         self.rect.midbottom = self.pos
 
