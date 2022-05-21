@@ -90,13 +90,13 @@ class Game:
             hits = pg.sprite.spritecollide(self.player, self.platforms, False)
             if hits:
                 if self.player.pos.x - 5 > hits[0].rect.topleft[0] and self.player.pos.x + 5 < hits[0].rect.topright[0]:
-                    if self.player.pos.y - 1.2 >= hits[0].rect.top and self.player.pos.y + 1.2 <= hits[0].rect.bottom:
+                    if self.player.pos.y >= hits[0].rect.top and self.player.pos.y <= hits[0].rect.bottom:
                         self.player.pos.y = hits[0].rect.top
                         self.player.vel.y = 0
                         self.player.jumping = False
 
         #Die!
-        if self.player.rect.bottom > HEIGHT:
+        if self.player.rect.bottom >= HEIGHT:
             for sprite in self.all_sprites:
                 sprite.rect.y -= max(self.player.vel.y, 10)
                 if sprite.rect.bottom < 0:
@@ -127,21 +127,21 @@ class Game:
             if event.type == pg.KEYUP:
                 if event.key == pg.K_SPACE and self.left_flag:
                     self.channelTime = pg.time.get_ticks() - self.channelTime
-                    self.player.jump_height = min(30, self.channelTime // 10)
+                    self.player.jump_height = min(35, self.channelTime // 10)
                     self.player.jumpLeft()
                     self.left_flag = False
                     self.right_flag = False
                     self.isChanneling = False
                 elif event.key == pg.K_SPACE and self.right_flag:
                     self.channelTime = pg.time.get_ticks() - self.channelTime
-                    self.player.jump_height = min(30, self.channelTime // 10)
+                    self.player.jump_height = min(35, self.channelTime // 10)
                     self.player.jumpRight()
                     self.left_flag = False
                     self.right_flag = False
                     self.isChanneling = False
                 elif event.key == pg.K_SPACE:
                     self.channelTime = pg.time.get_ticks() - self.channelTime
-                    self.player.jump_height = min(30, self.channelTime // 10)
+                    self.player.jump_height = min(35, self.channelTime // 10)
                     self.player.jump()
                     self.left_flag = False
                     self.right_flag = False
