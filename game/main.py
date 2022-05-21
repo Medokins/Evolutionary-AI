@@ -70,32 +70,33 @@ class Game:
     def update(self):
         # Game Loop - Update
         self.all_sprites.update(self.isChanneling)
-
+        
         # check if player hits a platform - only if falling
         if self.player.vel.y > 0:
             hits = pg.sprite.spritecollide(self.player, self.platforms, False)
             if hits:
-                lowest = hits[0]
-                for hit in hits:
-                    if hit.rect.bottom > lowest.rect.bottom:
-                        lowest = hit
-                if self.player.pos.x < lowest.rect.right + 10 and \
-                   self.player.pos.x > lowest.rect.left - 10:
-                    if self.player.pos.y < lowest.rect.centery:
-                        self.player.pos.y = lowest.rect.top
+                print(f"Player: {self.player.pos.y} platform: {hits[0].rect.topleft[1]}")
+                if self.player.pos.x - 5 > hits[0].rect.topleft[0] and self.player.pos.x + 5 < hits[0].rect.topright[0]:
+                    if self.player.pos.y >= hits[0].rect.topleft[1]:
+                        self.player.pos.y = hits[0].rect.top
                         self.player.vel.y = 0
                         self.player.jumping = False
 
         # if player reaches top 1/4 of screen
-        if self.player.rect.top <= HEIGHT / 4:
+        if self.player.rect.top < HEIGHT / 4:
             self.player.pos.y += max(abs(self.player.vel.y), 2)
             for plat in self.platforms:
                 plat.rect.y += max(abs(self.player.vel.y), 2)
                 if plat.rect.top >= HEIGHT:
-                    plat.kill()
                     self.score += 10
 
-        # Die!
+        # if player reaches bottom 7/10 of screen
+        if self.player.rect.top > HEIGHT * 7/10:
+            self.player.pos.y -= max(abs(self.player.vel.y), 2)
+            for plat in self.platforms:
+                plat.rect.y -= max(abs(self.player.vel.y), 2)
+
+        #Die!
         if self.player.rect.bottom > HEIGHT:
             for sprite in self.all_sprites:
                 sprite.rect.y -= max(self.player.vel.y, 10)
@@ -105,17 +106,13 @@ class Game:
         if len(self.platforms) == 0:
             self.playing = False
 
-        # spawn new platforms to keep same average number
-        while len(self.platforms) < 6:
-            width = random.randrange(50, 100)
-            Platform(self, random.randrange(0, WIDTH - width),
-                     random.randrange(-75, -30))
-
     def events(self):
+        
         # Game Loop - events
         hits = pg.sprite.spritecollide(self.player, self.platforms, False)
         if not hits: self.player.jumping = True
         else: self.player.jumping = False
+
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 if self.playing:
@@ -134,21 +131,21 @@ class Game:
             if event.type == pg.KEYUP:
                 if event.key == pg.K_SPACE and self.left_flag:
                     self.channelTime = pg.time.get_ticks() - self.channelTime
-                    self.player.jump_height = min(25, self.channelTime // 15)
+                    self.player.jump_height = min(30, self.channelTime // 10)
                     self.player.jumpLeft()
                     self.left_flag = False
                     self.right_flag = False
                     self.isChanneling = False
                 elif event.key == pg.K_SPACE and self.right_flag:
                     self.channelTime = pg.time.get_ticks() - self.channelTime
-                    self.player.jump_height = min(25, self.channelTime // 15)
+                    self.player.jump_height = min(30, self.channelTime // 10)
                     self.player.jumpRight()
                     self.left_flag = False
                     self.right_flag = False
                     self.isChanneling = False
                 elif event.key == pg.K_SPACE:
                     self.channelTime = pg.time.get_ticks() - self.channelTime
-                    self.player.jump_height = min(25, self.channelTime // 15)
+                    self.player.jump_height = min(30, self.channelTime // 10)
                     self.player.jump()
                     self.left_flag = False
                     self.right_flag = False
