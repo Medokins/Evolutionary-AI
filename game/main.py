@@ -32,7 +32,8 @@ class Game:
 
         # load platform images
         self.spritesheet = [Spritesheet(path.join(img_dir, "platforms", "platform_1.png")),
-                            Spritesheet(path.join(img_dir, "platforms", "platform_2.png"))]
+                            Spritesheet(path.join(img_dir, "platforms", "platform_2.png")),
+                            Spritesheet(path.join(img_dir, "platforms", "ground.png"))]
 
         # load character images
         self.character_standing = [
