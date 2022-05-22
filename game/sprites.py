@@ -174,12 +174,12 @@ class Player(pg.sprite.Sprite):
 
 class Platform(pg.sprite.Sprite):
     '''
-        class for creating and loading random platforms
+        class for creating and loading platforms
 
     '''
     def __init__(self, game, x, y, image_index = 0):
         '''
-            crates platform with random image at x, y coordinate
+            crates platform with image with given image_index at x, y coordinate
         '''
         self._layer = PLATFORM_LAYER
         self.groups = game.all_sprites, game.platforms
