@@ -1,6 +1,5 @@
 import pygame as pg
 from settings import *
-from random import choice
 vec = pg.math.Vector2
 
 
@@ -178,7 +177,7 @@ class Platform(pg.sprite.Sprite):
         class for creating and loading random platforms
 
     '''
-    def __init__(self, game, x, y):
+    def __init__(self, game, x, y, image_index = 0):
         '''
             crates platform with random image at x, y coordinate
         '''
@@ -186,11 +185,11 @@ class Platform(pg.sprite.Sprite):
         self.groups = game.all_sprites, game.platforms
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
-        images = [self.game.spritesheet[0].get_image(0, 0, 224, 40)]
-                  #self.game.spritesheet[1].get_image(0, 0, 112, 20)]
+        images = [self.game.spritesheet[0].get_image(0, 0, 224, 40),
+                  self.game.spritesheet[1].get_image(0, 0, 112, 20),
+                  self.game.spritesheet[2].get_image(0, 0, 1100, 40)]
                   
-        self.image = choice(images)
-        self.image.set_colorkey(WHITE)
+        self.image = images[image_index]
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
