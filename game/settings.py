@@ -1,6 +1,6 @@
 TITLE = "Jump King"
 WIDTH = 1000
-HEIGHT = 1080
+HEIGHT = 1000
 FPS = 60
 FONT_NAME = 'arial'
 HS_FILE = "highscore.txt"
@@ -16,8 +16,9 @@ PLAYER_LAYER = 2
 PLATFORM_LAYER = 1
 POW_LAYER = 1
 
-# platforms
-PLATFORM_LIST = [(0, HEIGHT - 100), (224, HEIGHT - 100), (448, HEIGHT - 100),(672, HEIGHT - 100),
+# platforms 
+# 2 -> ground
+PLATFORM_LIST = [(0, HEIGHT - 100, 2),
 
                 (WIDTH / 2 - 112, HEIGHT - 300),
                 (WIDTH - 224, HEIGHT - 500),
