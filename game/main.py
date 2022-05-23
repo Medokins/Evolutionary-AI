@@ -86,14 +86,23 @@ class Game:
                 plat.rect.y -= max(abs(self.player.vel.y), 2)
 
         # check if player hits a platform - only if falling
-        if self.player.vel.y > 0:
-            hits = pg.sprite.spritecollide(self.player, self.platforms, False)
-            if hits:
-                if self.player.pos.x - 5 > hits[0].rect.topleft[0] and self.player.pos.x + 5 < hits[0].rect.topright[0]:
-                    if self.player.pos.y >= hits[0].rect.top and self.player.pos.y <= hits[0].rect.bottom:
+        
+        hits = pg.sprite.spritecollide(self.player, self.platforms, False)
+        if hits:
+            if self.player.pos.x <= hits[0].rect.bottomleft[0] or self.player.pos.x > hits[0].rect.bottomright[0]:
+                self.player.vel.x = -self.player.vel.x 
+
+            if self.player.vel.y > 0:
+                if self.player.pos.x > hits[0].rect.topleft[0] and self.player.pos.x < hits[0].rect.topright[0]:
+                    if self.player.pos.y > hits[0].rect.top and self.player.pos.y < hits[0].rect.bottom:
                         self.player.pos.y = hits[0].rect.top
                         self.player.vel.y = 0
                         self.player.jumping = False
+
+            elif self.player.vel.y < 0:
+                if self.player.pos.x > hits[0].rect.bottomleft[0] and self.player.pos.x < hits[0].rect.bottomright[0]:
+                    if self.player.pos.y - self.player.rect[0] <= hits[0].rect.bottom:
+                        self.player.vel.y = 0
 
         #Die!
         if self.player.rect.bottom >= HEIGHT:
