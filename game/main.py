@@ -84,33 +84,29 @@ class Game:
             self.player.pos.y -= max(abs(self.player.vel.y), 2)
             for plat in self.platforms:
                 plat.rect.y -= max(abs(self.player.vel.y), 2)
-
-        # check if player hits a platform - only if falling
         
         hits = pg.sprite.spritecollide(self.player, self.platforms, False)
         if hits:
-            if self.player.pos.x <= hits[0].rect.bottomleft[0] or self.player.pos.x > hits[0].rect.bottomright[0]:
-                self.player.vel.x = -self.player.vel.x 
-
+            #print(f"Player pos: {self.player.pos.x}, platform: {hits[0].rect.bottomleft[0]}")
+            # top platform colision
             if self.player.vel.y > 0:
-                if self.player.pos.x > hits[0].rect.topleft[0] and self.player.pos.x < hits[0].rect.topright[0]:
+                if self.player.pos.x -5 > hits[0].rect.topleft[0] and self.player.pos.x + 5 < hits[0].rect.topright[0]:
                     if self.player.pos.y > hits[0].rect.top and self.player.pos.y < hits[0].rect.bottom:
                         self.player.pos.y = hits[0].rect.top
                         self.player.vel.y = 0
                         self.player.jumping = False
 
+            # bottom platform colision
             elif self.player.vel.y < 0:
-                if self.player.pos.x > hits[0].rect.bottomleft[0] and self.player.pos.x < hits[0].rect.bottomright[0]:
-                    if self.player.pos.y - self.player.rect[0] <= hits[0].rect.bottom:
+                if self.player.pos.x >= hits[0].rect.bottomleft[0] and self.player.pos.x <= hits[0].rect.bottomright[0]:
+                    if self.player.pos.y - self.player.rect[1] <= hits[0].rect.top:
                         self.player.vel.y = 0
 
-        #Die!
-        if self.player.rect.bottom >= HEIGHT:
-            for sprite in self.all_sprites:
-                sprite.rect.y -= max(self.player.vel.y, 10)
-                if sprite.rect.bottom < 0:
-                    sprite.kill()
-
+            # bouncing off sides
+            if self.player.pos.x + 30 < hits[0].rect.bottomleft[0] or self.player.pos.x - 30 > hits[0].rect.bottomright[0]:
+                if self.player.jumping:
+                    self.player.vel.x = -self.player.vel.x 
+                    
     def events(self):
         
         # Game Loop - events
