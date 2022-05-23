@@ -20,7 +20,7 @@ POW_LAYER = 1
 # 2 -> ground
 PLATFORM_LIST = [(0, HEIGHT - 100, 2),
 
-                (WIDTH / 2 - 112, HEIGHT - 300),
+                (112, HEIGHT - 300),
                 (WIDTH - 224, HEIGHT - 500),
 
                 (WIDTH / 2 - 112, 80),
