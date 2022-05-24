@@ -76,7 +76,7 @@ class Game:
             self.player.pos.y += max(abs(self.player.vel.y), 2)
             for plat in self.platforms:
                 plat.rect.y += max(abs(self.player.vel.y), 2)
-                if plat.rect.top >= HEIGHT:
+                if plat.rect.top >= self.score:
                     self.score += 10
 
         # if player reaches bottom 7/10 of screen
