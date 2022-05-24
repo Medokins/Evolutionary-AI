@@ -92,6 +92,7 @@ class Game:
             if self.player.vel.y > 0:
                 if self.player.pos.x -5 > hits[0].rect.topleft[0] and self.player.pos.x + 5 < hits[0].rect.topright[0]:
                     if self.player.pos.y > hits[0].rect.top and self.player.pos.y < hits[0].rect.bottom:
+                        self.player.vel.x = 0
                         self.player.pos.y = hits[0].rect.top
                         self.player.vel.y = 0
                         self.player.jumping = False
