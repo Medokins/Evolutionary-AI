@@ -39,7 +39,7 @@ class Player(pg.sprite.Sprite):
         self.image = self.standing_frames[0]
         self.rect = self.image.get_rect()
         self.rect.center = (40, HEIGHT - 100)
-        self.pos = vec(64, HEIGHT - 100)
+        self.pos = vec(WIDTH / 2, -1000)
         self.vel = vec(0, 0)
         self.acc = vec(0, 0)
         self.jump_height = 10
@@ -111,7 +111,7 @@ class Player(pg.sprite.Sprite):
                 self.acc.x = -PLAYER_ACC
             if keys[pg.K_RIGHT] or keys[pg.K_d]:
                 self.acc.x = PLAYER_ACC
-
+        if keys[pg.K_n]: self.pos.y -= 100
         # apply friction
         self.acc.x += self.vel.x * PLAYER_FRICTION
 
@@ -124,7 +124,8 @@ class Player(pg.sprite.Sprite):
         else: 
             self.vel += self.acc
 
-        if abs(self.vel.x) < 0.1: self.vel.x = 0
+        if abs(self.vel.x) < 0.1:
+            self.vel.x = 0
 
         self.pos += self.vel + 0.5 * self.acc
 
