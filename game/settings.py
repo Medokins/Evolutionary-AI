@@ -16,20 +16,29 @@ PLAYER_LAYER = 2
 PLATFORM_LAYER = 1
 POW_LAYER = 1
 
-# platforms 
-# 2 -> ground
-PLATFORM_LIST = [(0, HEIGHT - 100, 2),
+# platforms, indexes below:
+# 2 -> ground, 1 -> short one, 0 (default) -> long one
+PLATFORM_LIST = [(0, HEIGHT - 100, 2), # ground
 
                 (112, HEIGHT - 300),
                 (WIDTH - 224, HEIGHT - 500),
 
                 (WIDTH / 2 - 112, 80),
-                (0, -300),
+                (60, -300),
                 (WIDTH - 224, -700),
-                (0, -1100),
+                (500, -1100),
                 (WIDTH - 224, -1500),
                 (0, -1900),
-                (WIDTH - 224, -2300)]
+                (WIDTH - 224, -2300),
+
+                (WIDTH / 2 - 112, -2700, 1),
+                (60, -3000, 1),
+                (WIDTH - 224, -3400, 1),
+                (500, -3550),
+                (WIDTH - 224, -3900, 1),
+                (0, -4300, 1),
+                (WIDTH - 224, -4600)
+                ]
 
 # define colors
 WHITE = (255, 255, 255)
