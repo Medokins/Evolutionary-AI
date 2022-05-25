@@ -39,7 +39,7 @@ class Player(pg.sprite.Sprite):
         self.image = self.standing_frames[0]
         self.rect = self.image.get_rect()
         self.rect.center = (40, HEIGHT - 100)
-        self.pos = vec(WIDTH / 2, -1000)
+        self.pos = vec(40, HEIGHT - 100)
         self.vel = vec(0, 0)
         self.acc = vec(0, 0)
         self.jump_height = 10
