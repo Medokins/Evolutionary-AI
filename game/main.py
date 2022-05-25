@@ -78,6 +78,8 @@ class Game:
                 plat.rect.y += max(abs(self.player.vel.y), 2)
                 if plat.rect.top >= self.score:
                     self.score += 10
+        if self.score >= 5200:
+            pg.quit()
 
         # if player reaches bottom 7/10 of screen
         if self.player.rect.top > HEIGHT * 7/10:
@@ -205,11 +207,11 @@ class Game:
         text_rect.midtop = (x, y)
         self.screen.blit(text_surface, text_rect)
 
+if __name__ == '__main__':
+    g = Game()
+    g.show_start_screen()
+    while g.running:
+        g.new()
+        g.show_go_screen()
 
-g = Game()
-g.show_start_screen()
-while g.running:
-    g.new()
-    g.show_go_screen()
-
-pg.quit()
+    pg.quit()

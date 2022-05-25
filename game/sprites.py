@@ -85,7 +85,7 @@ class Player(pg.sprite.Sprite):
         self.rect.x -= 2
         if hits:
             self.vel.y = -self.jump_height
-            self.vel.x = 12
+            self.vel.x = 10
 
     def jumpLeft(self):
         '''
@@ -96,7 +96,7 @@ class Player(pg.sprite.Sprite):
         self.rect.x -= 2
         if hits:
             self.vel.y = -self.jump_height
-            self.vel.x = -12
+            self.vel.x = -10
 
     def update(self, isChanneling):
         '''
