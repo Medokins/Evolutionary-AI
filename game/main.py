@@ -104,7 +104,7 @@ class Game:
                         self.player.vel.y = 0
 
             # bouncing off sides
-            if self.player.pos.x + 30 < hits[0].rect.bottomleft[0] or self.player.pos.x - 30 > hits[0].rect.bottomright[0]:
+            if (self.player.pos.x + 30 < hits[0].rect.bottomleft[0] and self.player.vel.x > 0) or (self.player.pos.x - 30 > hits[0].rect.bottomright[0] and self.player.vel.x < 0):
                 if self.player.jumping:
                     self.player.vel.x = -self.player.vel.x 
                     
