@@ -39,10 +39,14 @@ class Player(pg.sprite.Sprite):
         self.image = self.standing_frames[0]
         self.rect = self.image.get_rect()
         self.rect.center = (40, HEIGHT - 100)
-        self.pos = vec(40, HEIGHT - 100)
+        self.pos = vec(WIDTH / 2, HEIGHT - 100)
         self.vel = vec(0, 0)
         self.acc = vec(0, 0)
         self.jump_height = 10
+        self.channelTime = 0
+        self.isChanneling = False
+        self.left_flag = False
+        self.right_flag = False
 
     def load_images(self):
         '''
@@ -98,7 +102,7 @@ class Player(pg.sprite.Sprite):
             self.vel.y = -self.jump_height
             self.vel.x = -10
 
-    def update(self, isChanneling):
+    def update(self):
         '''
             method that calls animate method, checks for player input (left/right movement)
             and apply movement equation
@@ -106,11 +110,11 @@ class Player(pg.sprite.Sprite):
         self.animate()
         self.acc = vec(0, PLAYER_GRAV)
         keys = pg.key.get_pressed()
-        if not isChanneling and not self.jumping:
+        if not self.isChanneling and not self.jumping:
             if keys[pg.K_LEFT] or keys[pg.K_a]:
-                self.acc.x = -PLAYER_ACC
+                self.pos.x += -8
             if keys[pg.K_RIGHT] or keys[pg.K_d]:
-                self.acc.x = PLAYER_ACC
+                self.pos.x += 8
         if keys[pg.K_n]: self.pos.y -= 100
         # apply friction
         self.acc.x += self.vel.x * PLAYER_FRICTION
