@@ -2,6 +2,7 @@ import pygame as pg
 from settings import *
 from sprites import *
 from os import path
+import random
 
 class Game:
     def __init__(self):
@@ -15,10 +16,6 @@ class Game:
         self.font_name = pg.font.match_font(FONT_NAME)
         self.load_data()
 
-        self.channelTime = 0
-        self.isChanneling = False
-        self.left_flag = False
-        self.right_flag = False
 
     def load_data(self):
         # load high score
@@ -51,7 +48,7 @@ class Game:
         self.score = 0
         self.all_sprites = pg.sprite.LayeredUpdates()
         self.platforms = pg.sprite.Group()
-        self.player = Player(self)
+        self.player = [Player(self)]
 
         for plat in PLATFORM_LIST:
             Platform(self, *plat)
@@ -69,91 +66,95 @@ class Game:
 
     def update(self):
         # Game Loop - Update
-        self.all_sprites.update(self.isChanneling)
+        self.all_sprites.update()
 
         # if player reaches top 1/4 of screen
-        if self.player.rect.top < HEIGHT / 4:
-            self.player.pos.y += max(abs(self.player.vel.y), 2)
-            for plat in self.platforms:
-                plat.rect.y += max(abs(self.player.vel.y), 2)
-                if plat.rect.top >= self.score:
-                    self.score += 10
-        if self.score >= 5200:
-            pg.quit()
+        for player in self.player:
+            if player.rect.top < HEIGHT / 4:
+                player.pos.y += max(abs(player.vel.y), 2)
+                for plat in self.platforms:
+                    plat.rect.y += max(abs(player.vel.y), 2)
+                    if plat.rect.top >= self.score:
+                        self.score += 10
+            if self.score >= 3530:
+                self.show_go_screen()
 
-        # if player reaches bottom 7/10 of screen
-        if self.player.rect.top > HEIGHT * 7/10:
-            self.player.pos.y -= max(abs(self.player.vel.y), 2)
-            for plat in self.platforms:
-                plat.rect.y -= max(abs(self.player.vel.y), 2)
-        
-        hits = pg.sprite.spritecollide(self.player, self.platforms, False)
-        if hits:
-            #print(f"Player pos: {self.player.pos.x}, platform: {hits[0].rect.bottomleft[0]}")
-            # top platform colision
-            if self.player.vel.y > 0:
-                if self.player.pos.x -5 > hits[0].rect.topleft[0] and self.player.pos.x + 5 < hits[0].rect.topright[0]:
-                    if self.player.pos.y > hits[0].rect.top and self.player.pos.y < hits[0].rect.bottom:
-                        self.player.vel.x = 0
-                        self.player.pos.y = hits[0].rect.top
-                        self.player.vel.y = 0
-                        self.player.jumping = False
+            # if player reaches bottom 7/10 of screen
+            if player.rect.top > HEIGHT * 7/10:
+                player.pos.y -= max(abs(player.vel.y), 2)
+                for plat in self.platforms:
+                    plat.rect.y -= max(abs(player.vel.y), 2)
+            
+            hits = pg.sprite.spritecollide(player, self.platforms, False)
+            if hits:
+                #print(f"Player pos: {self.player.pos.x}, platform: {hits[0].rect.bottomleft[0]}")
+                # top platform colision
+                if player.vel.y > 0:
+                    if player.pos.x -5 > hits[0].rect.topleft[0] and player.pos.x + 5 < hits[0].rect.topright[0]:
+                        if player.pos.y > hits[0].rect.top and player.pos.y < hits[0].rect.bottom:
+                            player.vel.x = 0
+                            player.pos.y = hits[0].rect.top
+                            player.vel.y = 0
+                            player.jumping = False
 
-            # bottom platform colision
-            elif self.player.vel.y < 0:
-                if self.player.pos.x >= hits[0].rect.bottomleft[0] and self.player.pos.x <= hits[0].rect.bottomright[0]:
-                    if self.player.pos.y - self.player.rect[1] <= hits[0].rect.top:
-                        self.player.vel.y = 0
+                # bottom platform colision
+                elif player.vel.y < 0:
+                    if player.pos.x >= hits[0].rect.bottomleft[0] and player.pos.x <= hits[0].rect.bottomright[0]:
+                        if player.pos.y - player.rect[1] <= hits[0].rect.top:
+                            player.vel.y = 0
 
-            # bouncing off sides
-            if (self.player.pos.x + 30 < hits[0].rect.bottomleft[0] and self.player.vel.x > 0) or (self.player.pos.x - 30 > hits[0].rect.bottomright[0] and self.player.vel.x < 0):
-                if self.player.jumping:
-                    self.player.vel.x = -self.player.vel.x 
+                # bouncing off sides
+                if (player.pos.x + 30 < hits[0].rect.bottomleft[0] and player.vel.x > 0) or (player.pos.x - 30 > hits[0].rect.bottomright[0] and player.vel.x < 0):
+                    if player.jumping:
+                        player.vel.x = -player.vel.x
                     
     def events(self):
         
         # Game Loop - events
-        hits = pg.sprite.spritecollide(self.player, self.platforms, False)
-        if not hits: self.player.jumping = True
-        else: self.player.jumping = False
+        for player in self.player:
+            hits = pg.sprite.spritecollide(player, self.platforms, False)
+            if not hits:
+                player.jumping = True
+            else:
+                player.jumping = False
 
-        for event in pg.event.get():
-            if event.type == pg.QUIT:
-                if self.playing:
-                    self.playing = False
-                self.running = False
+            for event in pg.event.get():
+                if event.type == pg.QUIT:
+                    if self.playing:
+                        self.playing = False
+                    self.running = False
 
-            if event.type == pg.KEYDOWN:
-                if event.key == pg.K_SPACE:
-                    self.channelTime = pg.time.get_ticks()
-                    self.isChanneling = True
-                if event.key == pg.K_a or event.key == pg.K_LEFT and self.isChanneling:
-                    self.left_flag = True
-                if event.key == pg.K_d or event.key == pg.K_RIGHT and self.isChanneling:
-                    self.right_flag = True
+                if event.type == pg.KEYDOWN:
+                    if event.key == pg.K_SPACE:
+                        player.channelTime = pg.time.get_ticks()
+                        player.isChanneling = True
+                    if event.key == pg.K_a or event.key == pg.K_LEFT and player.isChanneling:
+                        player.left_flag = True
+                    if event.key == pg.K_d or event.key == pg.K_RIGHT and player.isChanneling:
+                        player.right_flag = True
 
-            if event.type == pg.KEYUP:
-                if event.key == pg.K_SPACE and self.left_flag:
-                    self.channelTime = pg.time.get_ticks() - self.channelTime
-                    self.player.jump_height = min(35, self.channelTime // 10)
-                    self.player.jumpLeft()
-                    self.left_flag = False
-                    self.right_flag = False
-                    self.isChanneling = False
-                elif event.key == pg.K_SPACE and self.right_flag:
-                    self.channelTime = pg.time.get_ticks() - self.channelTime
-                    self.player.jump_height = min(35, self.channelTime // 10)
-                    self.player.jumpRight()
-                    self.left_flag = False
-                    self.right_flag = False
-                    self.isChanneling = False
-                elif event.key == pg.K_SPACE:
-                    self.channelTime = pg.time.get_ticks() - self.channelTime
-                    self.player.jump_height = min(35, self.channelTime // 10)
-                    self.player.jump()
-                    self.left_flag = False
-                    self.right_flag = False
-                    self.isChanneling = False
+                if event.type == pg.KEYUP:
+                    if event.key == pg.K_SPACE and player.left_flag:
+                        player.channelTime = pg.time.get_ticks() - player.channelTime
+                        player.jump_height = min(35, player.channelTime // 10)
+                        player.jumpLeft()
+                        player.left_flag = False
+                        player.right_flag = False
+                        player.isChanneling = False
+                    elif event.key == pg.K_SPACE and player.right_flag:
+                        player.channelTime = pg.time.get_ticks() - player.channelTime
+                        player.jump_height = min(35, player.channelTime // 10)
+                        player.jumpRight()
+                        player.left_flag = False
+                        player.right_flag = False
+                        player.isChanneling = False
+                    elif event.key == pg.K_SPACE:
+                        player.channelTime = pg.time.get_ticks() - player.channelTime
+                        player.jump_height = min(35, player.channelTime // 10)
+                        player.jump()
+                        player.left_flag = False
+                        player.right_flag = False
+                        player.isChanneling = False
 
     def draw(self):
         self.screen.fill((LIGHTBLUE))
@@ -197,6 +198,7 @@ class Game:
                 if event.type == pg.QUIT:
                     waiting = False
                     self.running = False
+                    pg.quit()
                 if event.type == pg.KEYUP:
                     waiting = False
 
