@@ -23,7 +23,8 @@ class Game:
     def load_data(self):
         # load high score
         self.dir = path.dirname(__file__)
-        with open(path.join(self.dir, HS_FILE), 'r') as f:
+        highscore_path = path.join(self.dir, '../game')
+        with open(path.join(highscore_path, HS_FILE), 'r') as f:
             try: self.highscore = int(f.read())
             except: self.highscore = 0
 
