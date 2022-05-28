@@ -31,8 +31,6 @@ def eval_genomes(genomes, config):
         nets.append(net)
         ge.append(genome)
 
-    print(game.player)
-
     while game.running and len(game.player) > 0:
         game.clock.tick(FPS)
         for event in pg.event.get():
