@@ -2,7 +2,6 @@ import pygame as pg
 from settings import *
 from sprites import *
 from os import path
-import random
 
 class Game:
     def __init__(self):
@@ -68,22 +67,23 @@ class Game:
         # Game Loop - Update
         self.all_sprites.update()
 
-        # if player reaches top 1/4 of screen
+        highest_player = self.player[0]
+        highest = self.player[0].pos.y
         for player in self.player:
-            if player.rect.top < HEIGHT / 4:
-                player.pos.y += max(abs(player.vel.y), 2)
-                for plat in self.platforms:
-                    plat.rect.y += max(abs(player.vel.y), 2)
-                    if plat.rect.top >= self.score:
-                        self.score += 10
-            if self.score >= 3530:
-                self.show_go_screen()
+            if player.pos.y <= highest:
+                highest_player = player
 
-            # if player reaches bottom 7/10 of screen
-            if player.rect.top > HEIGHT * 7/10:
-                player.pos.y -= max(abs(player.vel.y), 2)
-                for plat in self.platforms:
-                    plat.rect.y -= max(abs(player.vel.y), 2)
+                #if at top of screen
+                if highest_player.rect.top < 0:
+                    player.pos.y += HEIGHT
+                    for plat in self.platforms:
+                        plat.rect.y += HEIGHT
+
+                #if player reaches bottom of screen
+                if highest_player.rect.top > HEIGHT:
+                    player.pos.y -= HEIGHT
+                    for plat in self.platforms:
+                        plat.rect.y -= HEIGHT
             
             hits = pg.sprite.spritecollide(player, self.platforms, False)
             if hits:
