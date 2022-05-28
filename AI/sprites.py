@@ -78,6 +78,7 @@ class Player(pg.sprite.Sprite):
         hits = pg.sprite.spritecollide(self, self.game.platforms, False)
         self.rect.x -= 2
         if hits:
+            jump_height = min(35, jump_height)
             self.vel.y = -jump_height
     
     def jumpRight(self, jump_height):
@@ -88,6 +89,7 @@ class Player(pg.sprite.Sprite):
         hits = pg.sprite.spritecollide(self, self.game.platforms, False)
         self.rect.x -= 2
         if hits:
+            jump_height = min(35, jump_height)
             self.vel.y = -jump_height
             self.vel.x = 10
 
@@ -99,6 +101,7 @@ class Player(pg.sprite.Sprite):
         hits = pg.sprite.spritecollide(self, self.game.platforms, False)
         self.rect.x -= 2
         if hits:
+            jump_height = min(35, jump_height)
             self.vel.y = -jump_height
             self.vel.x = -10
 
