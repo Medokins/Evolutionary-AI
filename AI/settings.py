@@ -22,7 +22,8 @@ PLATFORM_LIST = [
     [(0, HEIGHT - 40, 2), (112, HEIGHT - 300, 0), ((WIDTH - 224)/2, HEIGHT - 800, 2)], #level 1
     [(0, -520, 0)],  #level 2
     [(448, -1050, 2), (-200, -1350, 2), (224, -1600, 0)],#level 3
-    [(WIDTH - 448, -2050, 2)] #final leap
+    [(WIDTH - 448, -2050, 2), (224, -2450, 0)], #level 4
+    [(WIDTH - 400, -3050, 0)] #final leap
                 ]
 
 # define colors
