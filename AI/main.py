@@ -3,6 +3,7 @@ from settings import *
 from sprites import *
 from os import path
 import numpy as np
+import sys
 
 class Game:
     def __init__(self):
@@ -53,7 +54,7 @@ class Game:
             self.clock.tick(FPS)
             self.events()
             self.update()
-            self.draw()
+            self.draw(self.player[0], self.find_closest(self.player[0]))
 
     def update(self):
         # Game Loop - Update
@@ -103,7 +104,9 @@ class Game:
 
             player.score = int(HEIGHT - player.pos.y + HEIGHT*player.level)
             self.score = highest_player.score
-            print(self.find_closest(highest_player))
+            if self.score > 4700:
+                pg.quit()
+                sys.exit()
                     
     def events(self):
         # Game Loop - events
@@ -147,10 +150,16 @@ class Game:
                         player.isChanneling = False
 
                     
-    def draw(self):
+    def draw(self, player, closest):
         self.screen.fill((LIGHTBLUE))
         self.all_sprites.draw(self.screen)
         self.draw_text(str(self.score), 22, WHITE, WIDTH / 2, 15)
+        #print(f"Closest platform at: {self.find_closest(player)}")
+        try:
+            pg.draw.line(self.screen, (255,0,0), (player.rect.center[0] + 20, player.rect.center[1]), (closest[0], closest[2] + 20), 5)
+            pg.draw.line(self.screen, (255,0,0), (player.rect.center[0] + 20, player.rect.center[1]), (closest[1], closest[2] + 20), 5)
+        except:
+            pass
         pg.display.flip()
 
 
@@ -162,7 +171,7 @@ class Game:
         self.screen.blit(text_surface, text_rect)
 
     def find_closest(self, player):
-        plat_length = {0: 224, 1: 112, 2: 1200}
+        plat_length = {0: 224, 1: 112, 2: 1100}
         min_distance = WIDTH**2 # to initialize first comparison
         closest_platform = None
         for level in PLATFORM_LIST[player.level: player.level + 2]:
@@ -173,16 +182,18 @@ class Game:
                     if plat[0] + plat_length[plat[2]] < player.pos.x: # it's on the left side
                         distance = np.sqrt((player.pos.x - (plat[0] + plat_length[plat[2]]))**2 +\
                                         (player.pos.y - (HEIGHT * player.level + plat[1] + 40))**2)
-                    else: # it's on the right side
+                    elif plat[0] > player.pos.x: # it's on the right side
                         distance = np.sqrt((player.pos.x - plat[0])**2 +\
                                         (player.pos.y - (HEIGHT * player.level + plat[1] + 40))**2)
+                    else: # it's above player
+                        distance = player.pos.y - (HEIGHT * player.level + plat[1])
 
                     if distance < min_distance:
                         min_distance = distance
                         closest_platform = plat
         # this order is weird but done like this to better fit in AI activation function
-        if closest_platform != None:
-            return [closest_platform[0], closest_platform[0] + plat_length[closest_platform[2]], closest_platform[1]]
+        if closest_platform:
+            return [closest_platform[0], closest_platform[0] + plat_length[closest_platform[2]], HEIGHT * player.level + closest_platform[1]]
         else:
             None
             
