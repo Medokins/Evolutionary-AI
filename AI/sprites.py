@@ -48,6 +48,9 @@ class Player(pg.sprite.Sprite):
         self.left_flag = False
         self.right_flag = False
 
+        self.level = 0
+        self.score = 0
+
     def load_images(self):
         '''
             loads all Player images
@@ -185,7 +188,7 @@ class Platform(pg.sprite.Sprite):
         class for creating and loading platforms
 
     '''
-    def __init__(self, game, x, y, image_index = 0):
+    def __init__(self, game, x, y, image_index):
         '''
             crates platform with image with given image_index at x, y coordinate
         '''
