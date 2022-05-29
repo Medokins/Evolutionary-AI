@@ -80,8 +80,8 @@ class Game:
                 if highest_player.rect.top > HEIGHT:
                     player.level -= 1
                     player.pos.y -= HEIGHT
-                    for plat in self.platforms:
-                        plat.rect.y -= HEIGHT     
+                    # for plat in self.platforms:
+                    #     plat.rect.y -= HEIGHT     
                
             player.score = int(HEIGHT - player.pos.y + HEIGHT*player.level)
             self.score = highest_player.score + 2
@@ -117,6 +117,7 @@ class Game:
 
             # kill player if he falls down from highest platform
             if player.score + 100 < player.highest_platform:
+                self.player.pop(self.player.index(player))
                 player.kill()
 
                     
