@@ -49,8 +49,9 @@ class Game:
         self.platforms = pg.sprite.Group()
         self.player = [Player(self)]
 
-        for plat in PLATFORM_LIST:
-            Platform(self, *plat)
+        for level in PLATFORM_LIST:
+            for plat in level:
+                Platform(self, *plat)
 
         self.run()
 
