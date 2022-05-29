@@ -2,6 +2,7 @@ import pygame as pg
 from settings import *
 from sprites import *
 from os import path
+import numpy as np
 
 class Game:
     def __init__(self):
@@ -58,21 +59,22 @@ class Game:
         # Game Loop - Update
         self.all_sprites.update()
 
-        # if player reaches top 1/4 of screen
         highest_player = self.player[0]
         highest = self.player[0].pos.y
         for player in self.player:
             if player.pos.y <= highest:
                 highest_player = player
 
-                #if at top 1/4 of screen
+                #if at top of screen
                 if highest_player.rect.top < 0:
+                    player.level += 1
                     player.pos.y += HEIGHT
                     for plat in self.platforms:
                         plat.rect.y += HEIGHT
 
                 #if player reaches bottom of screen
                 if highest_player.rect.top > HEIGHT:
+                    player.level -= 1
                     player.pos.y -= HEIGHT
                     for plat in self.platforms:
                         plat.rect.y -= HEIGHT
@@ -98,15 +100,19 @@ class Game:
                 if (player.pos.x + 30 < hits[0].rect.bottomleft[0] and player.vel.x > 0) or (player.pos.x - 30 > hits[0].rect.bottomright[0] and player.vel.x < 0):
                     if player.jumping:
                         player.vel.x = -player.vel.x
+
+            player.score = int(HEIGHT - player.pos.y + HEIGHT*player.level)
+            self.score = highest_player.score
+            print(self.find_closest(highest_player))
                     
     def events(self):
         # Game Loop - events
         for player in self.player:
             hits = pg.sprite.spritecollide(player, self.platforms, False)
-            if not hits:
-                player.jumping = True
-            else:
+            if hits:
                 player.jumping = False
+            else:
+                player.jumping = True
 
             for event in pg.event.get():
                 if event.type == pg.QUIT:
@@ -155,12 +161,39 @@ class Game:
         text_rect.midtop = (x, y)
         self.screen.blit(text_surface, text_rect)
 
+    def find_closest(self, player):
+        plat_length = {0: 224, 1: 112, 2: 1200}
+        min_distance = WIDTH**2 # to initialize first comparison
+        closest_platform = None
+        for level in PLATFORM_LIST[player.level: player.level + 2]:
+            for plat in level:
+                # look only for platforms that are above player
+                if HEIGHT * player.level + plat[1] < player.pos.y:
+                    # check if platform is on the left or right side of player
+                    if plat[0] + plat_length[plat[2]] < player.pos.x: # it's on the left side
+                        distance = np.sqrt((player.pos.x - (plat[0] + plat_length[plat[2]]))**2 +\
+                                        (player.pos.y - (HEIGHT * player.level + plat[1] + 40))**2)
+                    else: # it's on the right side
+                        distance = np.sqrt((player.pos.x - plat[0])**2 +\
+                                        (player.pos.y - (HEIGHT * player.level + plat[1] + 40))**2)
+
+                    if distance < min_distance:
+                        min_distance = distance
+                        closest_platform = plat
+        # this order is weird but done like this to better fit in AI activation function
+        if closest_platform != None:
+            return [closest_platform[0], closest_platform[0] + plat_length[closest_platform[2]], closest_platform[1]]
+        else:
+            None
+            
+                
 if __name__ == '__main__':
     g = Game()
     g.all_sprites = pg.sprite.LayeredUpdates()
     g.platforms = pg.sprite.Group()
-    for plat in PLATFORM_LIST:
-        Platform(g, *plat)
+    for level in PLATFORM_LIST:
+        for plat in level:
+            Platform(g, *plat)
 
     while g.running:
         g.clock.tick(FPS)
