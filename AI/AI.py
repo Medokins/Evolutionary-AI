@@ -4,6 +4,7 @@ import neat
 from main import *
 
 gen = 0
+DRAW_LINES = True
 
 def eval_genomes(genomes, config):
     
@@ -42,10 +43,7 @@ def eval_genomes(genomes, config):
                 sys.exit()
                 
         #TO DO
-        for x, player in enumerate(game.player):
-            # previous_best = player.pos.y
-            # if player.pos.y > previous_best: 
-            #     ge[x].fitness += 0.1
+        for _, player in enumerate(game.player):
 
             hits = pg.sprite.spritecollide(player, game.platforms, False)
             if not hits: 
@@ -54,11 +52,12 @@ def eval_genomes(genomes, config):
                 player.jumping = False
 
             closest = game.find_closest(player)
-            #send player x, y and platforms x start, x end and top y position 
-            #closest -> closest platform to player above him
-            #closest[0] -> left side, closest[1] -> right side closest[2] -> height 
-            #need to change activation function in config file
-            output = nets[game.player.index(player)].activate((player.pos.x, player.pos.y, closest[0], closest[1], closest[2]))
+            # send player x, y and platforms x start, x end and top y position 
+            # closest -> closest platform to player above him
+            # closest[0] -> left side, closest[1] -> right side closest[2] -> height 
+            # need to change activation function in config file
+            # player.pos.x, player.pos.y, closest[0], closest[1], closest[2]
+            output = nets[game.player.index(player)].activate((player.pos.x, player.pos.y, closest[0]))
             if player.jumping == False:
                 if output[0] > 0:
                     player.jumpRight(output[0])
@@ -66,7 +65,7 @@ def eval_genomes(genomes, config):
                     player.jumpLeft(abs(output[0]))
 
         game.update()
-        game.draw()
+        game.draw(player, closest)
 
 def run(config_file):
     """
