@@ -62,7 +62,10 @@ class Game:
 
         highest_player = self.player[0]
         highest = self.player[0].pos.y
+
         for player in self.player:
+
+            # moving screen when highest player reaches top of a screen
             if player.pos.y <= highest:
                 highest_player = player
 
@@ -78,8 +81,14 @@ class Game:
                     player.level -= 1
                     player.pos.y -= HEIGHT
                     for plat in self.platforms:
-                        plat.rect.y -= HEIGHT
-            
+                        plat.rect.y -= HEIGHT     
+               
+            player.score = int(HEIGHT - player.pos.y + HEIGHT*player.level)
+            self.score = highest_player.score + 2
+            if self.score > 4500:
+                pg.quit()
+                sys.exit()
+
             hits = pg.sprite.spritecollide(player, self.platforms, False)
             if hits:
                 # top platform colision (when falling)
@@ -91,6 +100,9 @@ class Game:
                             player.vel.y = 0
                             player.jumping = False
 
+                            # save highest platform player landed on yet to compare when falling
+                            player.highest_platform = player.score
+
                 # bottom platform colision
                 elif player.vel.y < 0:
                     if player.pos.x >= hits[0].rect.bottomleft[0] and player.pos.x <= hits[0].rect.bottomright[0]:
@@ -101,12 +113,12 @@ class Game:
                 if (player.pos.x + 30 < hits[0].rect.bottomleft[0] and player.vel.x > 0) or (player.pos.x - 30 > hits[0].rect.bottomright[0] and player.vel.x < 0):
                     if player.jumping:
                         player.vel.x = -player.vel.x
+                    
 
-            player.score = int(HEIGHT - player.pos.y + HEIGHT*player.level)
-            self.score = highest_player.score
-            if self.score > 4700:
-                pg.quit()
-                sys.exit()
+            # kill player if he falls down from highest platform
+            if player.score + 100 < player.highest_platform:
+                player.kill()
+
                     
     def events(self):
         # Game Loop - events
@@ -174,6 +186,7 @@ class Game:
         plat_length = {0: 224, 1: 112, 2: 1100}
         min_distance = WIDTH**2 # to initialize first comparison
         closest_platform = None
+        # search only in current level and level above
         for level in PLATFORM_LIST[player.level: player.level + 2]:
             for plat in level:
                 # look only for platforms that are above player
