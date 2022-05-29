@@ -50,6 +50,7 @@ class Player(pg.sprite.Sprite):
 
         self.level = 0
         self.score = 0
+        self.highest_platform = None
 
     def load_images(self):
         '''
