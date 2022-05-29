@@ -17,12 +17,12 @@ PLATFORM_LAYER = 1
 POW_LAYER = 1
 
 # platforms, indexes below:
-# 2 -> ground, 1 -> short one, 0 (default) -> long one
+# 2 -> ground, 1 -> short one, 0  -> long one
 PLATFORM_LIST = [
-    (0, HEIGHT - 40, 2), (112, HEIGHT - 300), ((WIDTH - 224)/2, HEIGHT - 800, 2), #level 1
-    (0, -550),  #level 2
-    (448, -1050, 2), (-200, -1350, 2), (224, -1600),#level 3
-    ((WIDTH - 448), -2050, 2) #final leap
+    [(0, HEIGHT - 40, 2), (112, HEIGHT - 300, 0), ((WIDTH - 224)/2, HEIGHT - 800, 2)], #level 1
+    [(0, -520, 0)],  #level 2
+    [(448, -1050, 2), (-200, -1350, 2), (224, -1600, 0)],#level 3
+    [(WIDTH - 448, -2050, 2)] #final leap
                 ]
 
 # define colors
