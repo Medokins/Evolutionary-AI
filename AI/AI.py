@@ -57,6 +57,7 @@ def eval_genomes(genomes, config):
             #send player x, y and platforms x start, x end and top y position 
             #closest -> closest platform to player above him
             #closest[0] -> left side, closest[1] -> right side closest[2] -> height 
+            #need to change activation function in config file
             output = nets[game.player.index(player)].activate((player.pos.x, player.pos.y, closest[0], closest[1], closest[2]))
             if player.jumping == False:
                 if output[0] > 0:
