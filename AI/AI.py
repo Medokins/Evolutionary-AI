@@ -18,8 +18,10 @@ def eval_genomes(genomes, config):
     game = Game()
     game.all_sprites = pg.sprite.LayeredUpdates()
     game.platforms = pg.sprite.Group()
-    for plat in PLATFORM_LIST:
-        Platform(game, *plat)
+    for level in PLATFORM_LIST:
+        for plat in level:
+            Platform(game, *plat)
+
 
     nets = []
     ge = []
@@ -41,9 +43,9 @@ def eval_genomes(genomes, config):
                 
         #TO DO
         for x, player in enumerate(game.player):
-            previous_best = player.pos.y
-            if player.pos.y > previous_best: 
-                ge[x].fitness += 0.1
+            # previous_best = player.pos.y
+            # if player.pos.y > previous_best: 
+            #     ge[x].fitness += 0.1
 
             hits = pg.sprite.spritecollide(player, game.platforms, False)
             if not hits: 
@@ -51,15 +53,16 @@ def eval_genomes(genomes, config):
             else:
                 player.jumping = False
 
-            # send player x, y and platforms x start, x end and top y position 
-            # closest -> closest platform to player above him yet to implement
-            # output = nets[game.player.index(player)].\
-            #     activate(player.pos.x, player.pos.y, closest.rect.topleft[0], closest.rect.topright[0], closest.rect.topleft[1])
-            # if player.jumping == False:
-            #     if output[0] > 0:
-            #         player.jumpRight(output[0])
-            #     else:
-            #         player.jumpLeft(abs(output[0]))
+            closest = game.find_closest(player)
+            #send player x, y and platforms x start, x end and top y position 
+            #closest -> closest platform to player above him
+            #closest[0] -> left side, closest[1] -> right side closest[2] -> height 
+            output = nets[game.player.index(player)].activate((player.pos.x, player.pos.y, closest[0], closest[1], closest[2]))
+            if player.jumping == False:
+                if output[0] > 0:
+                    player.jumpRight(output[0])
+                else:
+                    player.jumpLeft(abs(output[0]))
 
         game.update()
         game.draw()
@@ -81,7 +84,7 @@ def run(config_file):
     p.add_reporter(neat.StdOutReporter(True))
     stats = neat.StatisticsReporter()
     p.add_reporter(stats)
-    #p.add_reporter(neat.Checkpointer(5))
+    p.add_reporter(neat.Checkpointer(5))
     winner = p.run(eval_genomes, 50)
 
 
