@@ -16,13 +16,12 @@ def eval_genomes(genomes, config):
     global gen
     gen += 1
 
-    game = Game()
+    game = Game(AI = True)
     game.all_sprites = pg.sprite.LayeredUpdates()
     game.platforms = pg.sprite.Group()
     for level in PLATFORM_LIST:
         for plat in level:
             Platform(game, *plat)
-
 
     nets = []
     ge = []
@@ -42,30 +41,42 @@ def eval_genomes(genomes, config):
                 pg.quit()
                 sys.exit()
                 
-        #TO DO
-        for _, player in enumerate(game.player):
+        for x, player in enumerate(game.player):
 
             hits = pg.sprite.spritecollide(player, game.platforms, False)
-            if not hits: 
-                player.jumping = True
-            else:
+            if hits and player.vel.y >= 0: 
                 player.jumping = False
+            else:
+                player.jumping = True
 
-            closest = game.find_closest(player)
-            # send player x, y and platforms x start, x end and top y position 
-            # closest -> closest platform to player above him
-            # closest[0] -> left side, closest[1] -> right side closest[2] -> height 
-            # need to change activation function in config file
-            # player.pos.x, player.pos.y, closest[0], closest[1], closest[2]
-            output = nets[game.player.index(player)].activate((player.pos.x, player.pos.y, closest[0]))
-            if player.jumping == False:
+
+            try:
+                if player.highest_platform > player.previous_highest_platform:
+                    player.previous_highest_platform = player.highest_platform
+                    ge[x].fitness += 5
+            except:
+                pass
+
+            if not player.jumping:
+                closest = game.find_closest(player)
+                # send player x, y and platforms x start, x end and top y position 
+                # closest -> closest platform to player above him
+                # closest[0] -> left side, closest[1] -> right side closest[2] -> height 
+                # need to change activation function in config file
+                # player.pos.x, player.pos.y, closest[0], closest[1], closest[2]
+                
+                distance_left = player.pos.x - closest[0]
+                distance_right = player.pos.x - closest[1]
+                distance_y = player.pos.y - closest[2]
+                output = nets[game.player.index(player)].activate((distance_left + 10, distance_right - 10, distance_y))
+
                 if output[0] > 0:
                     player.jumpRight(output[0])
-                else:
+                elif output[0] < 0:
                     player.jumpLeft(abs(output[0]))
 
         game.update()
-        game.draw(player, closest)
+        game.draw()
 
 def run(config_file):
     """
