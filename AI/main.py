@@ -6,7 +6,7 @@ import numpy as np
 import sys
 
 class Game:
-    def __init__(self):
+    def __init__(self, AI):
         # initialize game window, etc
         pg.init()
         pg.mixer.init()
@@ -20,6 +20,8 @@ class Game:
         self.player = []
         self.all_sprites = pg.sprite.LayeredUpdates()
         self.platforms = pg.sprite.Group()
+
+        self.AI = AI
 
 
     def load_data(self):
@@ -62,7 +64,6 @@ class Game:
 
         highest_player = self.player[0]
         for player in self.player:
-
             # moving screen when highest player reaches top of a screen   
             player.score = int(HEIGHT - player.pos.y + HEIGHT*player.level)
             self.score = highest_player.score + 2
@@ -74,7 +75,6 @@ class Game:
             if hits:
                 # top platform colision (when falling)
                 if player.vel.y > 0:
-
                     if player.score >= highest_player.score:
                         highest_player = player
                     else:
@@ -107,6 +107,7 @@ class Game:
             #if at top of screen
             if player.rect.top < 0:
                 player.level += 1
+                player.moves += 5
                 player.pos.y += HEIGHT
                 for plat in self.platforms:
                     plat.rect.y += HEIGHT
@@ -119,9 +120,9 @@ class Game:
                     plat.rect.y -= HEIGHT   
             
             # kill player if he falls down from highest platform
-            if player.score + 100 < player.highest_platform:
-                self.player.pop(self.player.index(player))
-
+            if self.AI:
+                if player.score + 100 < player.highest_platform or player.moves == 5:
+                    self.player.pop(self.player.index(player))
                     
     def events(self):
         # Game Loop - events
@@ -217,7 +218,7 @@ class Game:
             
                 
 if __name__ == '__main__':
-    g = Game()
+    g = Game(AI=False)
     g.all_sprites = pg.sprite.LayeredUpdates()
     g.platforms = pg.sprite.Group()
     for level in PLATFORM_LIST:
@@ -226,7 +227,7 @@ if __name__ == '__main__':
 
     while g.running:
         g.clock.tick(FPS)
-        g.player = [Player(g)]
+        g.player = [Player(g, AI=False)]
         g.run()
 
     pg.quit()
