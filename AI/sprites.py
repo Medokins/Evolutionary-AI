@@ -26,7 +26,7 @@ class Player(pg.sprite.Sprite):
     '''
         class for running player movement/animation methods
     '''
-    def __init__(self, game):
+    def __init__(self, game, AI=True):
         self._layer = PLAYER_LAYER
         self.groups = game.all_sprites
         pg.sprite.Sprite.__init__(self, self.groups)
@@ -55,6 +55,8 @@ class Player(pg.sprite.Sprite):
         self.last = pg.time.get_ticks()
         self.cooldown = 1500
         self.moves = 0
+
+        if not AI: self.cooldown = 0
 
     def load_images(self):
         '''
@@ -109,6 +111,7 @@ class Player(pg.sprite.Sprite):
                 jump_height = min(35, jump_height)
                 self.vel.y = -jump_height
                 self.vel.x = 10
+                self.moves += 1
 
     def jumpLeft(self, jump_height):
         '''
@@ -125,6 +128,7 @@ class Player(pg.sprite.Sprite):
                 jump_height = min(35, jump_height)
                 self.vel.y = -jump_height
                 self.vel.x = -10
+                self.moves += 1
 
     def update(self):
         '''
