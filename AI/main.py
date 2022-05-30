@@ -54,35 +54,16 @@ class Game:
             self.clock.tick(FPS)
             self.events()
             self.update()
-            self.draw(self.player[0], self.find_closest(self.player[0]))
+            self.draw()
 
     def update(self):
         # Game Loop - Update
         self.all_sprites.update()
 
         highest_player = self.player[0]
-        highest = self.player[0].pos.y
-
         for player in self.player:
 
-            # moving screen when highest player reaches top of a screen
-            if player.pos.y <= highest:
-                highest_player = player
-
-                #if at top of screen
-                if highest_player.rect.top < 0:
-                    player.level += 1
-                    player.pos.y += HEIGHT
-                    for plat in self.platforms:
-                        plat.rect.y += HEIGHT
-
-                #if player reaches bottom of screen
-                if highest_player.rect.top > HEIGHT:
-                    player.level -= 1
-                    player.pos.y -= HEIGHT
-                    # for plat in self.platforms:
-                    #     plat.rect.y -= HEIGHT     
-               
+            # moving screen when highest player reaches top of a screen   
             player.score = int(HEIGHT - player.pos.y + HEIGHT*player.level)
             self.score = highest_player.score + 2
             if self.score > 4500:
@@ -93,6 +74,12 @@ class Game:
             if hits:
                 # top platform colision (when falling)
                 if player.vel.y > 0:
+
+                    if player.score >= highest_player.score:
+                        highest_player = player
+                    else:
+                        self.player.pop(self.player.index(player))
+
                     if player.pos.x -5 > hits[0].rect.topleft[0] and player.pos.x + 5 < hits[0].rect.topright[0]:
                         if player.pos.y > hits[0].rect.top and player.pos.y < hits[0].rect.bottom:
                             player.vel.x = 0
@@ -101,7 +88,10 @@ class Game:
                             player.jumping = False
 
                             # save highest platform player landed on yet to compare when falling
-                            player.highest_platform = player.score
+                            temp = player.highest_platform
+                            if player.score - 20 > temp:
+                                player.highest_platform = player.score
+                                player.previous_highest_platform = temp
 
                 # bottom platform colision
                 elif player.vel.y < 0:
@@ -114,11 +104,23 @@ class Game:
                     if player.jumping:
                         player.vel.x = -player.vel.x
                     
+            #if at top of screen
+            if player.rect.top < 0:
+                player.level += 1
+                player.pos.y += HEIGHT
+                for plat in self.platforms:
+                    plat.rect.y += HEIGHT
 
+            #if player reaches bottom of screen
+            if player.rect.top > HEIGHT:
+                player.level -= 1
+                player.pos.y -= HEIGHT
+                for plat in self.platforms:
+                    plat.rect.y -= HEIGHT   
+            
             # kill player if he falls down from highest platform
             if player.score + 100 < player.highest_platform:
                 self.player.pop(self.player.index(player))
-                player.kill()
 
                     
     def events(self):
@@ -163,16 +165,18 @@ class Game:
                         player.isChanneling = False
 
                     
-    def draw(self, player, closest):
+    def draw(self):
         self.screen.fill((LIGHTBLUE))
         self.all_sprites.draw(self.screen)
         self.draw_text(str(self.score), 22, WHITE, WIDTH / 2, 15)
         #print(f"Closest platform at: {self.find_closest(player)}")
-        try:
-            pg.draw.line(self.screen, (255,0,0), (player.rect.center[0] + 20, player.rect.center[1]), (closest[0], closest[2] + 20), 5)
-            pg.draw.line(self.screen, (255,0,0), (player.rect.center[0] + 20, player.rect.center[1]), (closest[1], closest[2] + 20), 5)
-        except:
-            pass
+        for player in self.player:
+            closest = self.find_closest(player)
+            try:
+                pg.draw.line(self.screen, (255,0,0), (player.rect.center[0] + 20, player.rect.center[1]), (closest[0], closest[2] + 20), 5)
+                pg.draw.line(self.screen, (255,0,0), (player.rect.center[0] + 20, player.rect.center[1]), (closest[1], closest[2] + 20), 5)
+            except:
+                pass
         pg.display.flip()
 
 
