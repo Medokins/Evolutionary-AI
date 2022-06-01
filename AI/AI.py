@@ -49,7 +49,6 @@ def eval_genomes(genomes, config):
             else:
                 player.jumping = True
 
-
             try:
                 if player.highest_platform > player.previous_highest_platform:
                     player.previous_highest_platform = player.highest_platform
