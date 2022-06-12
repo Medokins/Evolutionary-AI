@@ -54,7 +54,7 @@ class Player(pg.sprite.Sprite):
         self.previous_highest_platform = 40
         self.last = pg.time.get_ticks()
         self.cooldown = 1500
-        self.moves = 0
+        self.moves = 5
 
         if not AI: self.cooldown = 0
 
@@ -94,7 +94,6 @@ class Player(pg.sprite.Sprite):
             if hits:
                 jump_height = min(35, jump_height)
                 self.vel.y = -jump_height
-                self.last = now
     
     def jumpRight(self, jump_height):
         '''
@@ -111,7 +110,7 @@ class Player(pg.sprite.Sprite):
                 jump_height = min(35, jump_height)
                 self.vel.y = -jump_height
                 self.vel.x = 10
-                self.moves += 1
+                self.moves -= 1
 
     def jumpLeft(self, jump_height):
         '''
@@ -128,7 +127,7 @@ class Player(pg.sprite.Sprite):
                 jump_height = min(35, jump_height)
                 self.vel.y = -jump_height
                 self.vel.x = -10
-                self.moves += 1
+                self.moves -= 1
 
     def update(self):
         '''
