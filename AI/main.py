@@ -22,6 +22,8 @@ class Game:
         self.platforms = pg.sprite.Group()
 
         self.AI = AI
+        self.cooldown = 100
+        self.last = pg.time.get_ticks()
 
 
     def load_data(self):
@@ -62,67 +64,72 @@ class Game:
         # Game Loop - Update
         self.all_sprites.update()
 
-        highest_player = self.player[0]
-        for player in self.player:
-            # moving screen when highest player reaches top of a screen   
-            player.score = int(HEIGHT - player.pos.y + HEIGHT*player.level)
-            self.score = highest_player.score + 2
-            if self.score > 4500:
-                pg.quit()
-                sys.exit()
+        if len(self.player) > 0:
+            highest_player = self.player[0]
+            for player in self.player:
+                # moving screen when highest player reaches top of a screen   
+                player.score = int(HEIGHT - player.pos.y + HEIGHT*player.level)
+                self.score = highest_player.score + 2
+                if self.score > 4500:
+                    pg.quit()
+                    sys.exit()
 
-            hits = pg.sprite.spritecollide(player, self.platforms, False)
-            if hits:
-                # top platform colision (when falling)
-                if player.vel.y > 0:
-                    if player.score >= highest_player.score:
-                        highest_player = player
-                    else:
-                        self.player.pop(self.player.index(player))
+                hits = pg.sprite.spritecollide(player, self.platforms, False)
+                if hits:
+                    # top platform colision (when falling)
+                    if player.vel.y > 0:
+                        if player.score >= highest_player.score:
+                            highest_player = player
 
-                    if player.pos.x -5 > hits[0].rect.topleft[0] and player.pos.x + 5 < hits[0].rect.topright[0]:
-                        if player.pos.y > hits[0].rect.top and player.pos.y < hits[0].rect.bottom:
-                            player.vel.x = 0
-                            player.pos.y = hits[0].rect.top
-                            player.vel.y = 0
-                            player.jumping = False
+                        if player.pos.x -5 > hits[0].rect.topleft[0] and player.pos.x + 5 < hits[0].rect.topright[0]:
+                            if player.pos.y > hits[0].rect.top and player.pos.y < hits[0].rect.bottom:
+                                player.vel.x = 0
+                                player.pos.y = hits[0].rect.top
+                                player.vel.y = 0
+                                player.jumping = False
 
-                            # save highest platform player landed on yet to compare when falling
-                            temp = player.highest_platform
-                            if player.score - 20 > temp:
-                                player.highest_platform = player.score
-                                player.previous_highest_platform = temp
+                                # save highest platform player landed on yet to compare when falling
+                                temp = player.highest_platform
+                                if player.score - 20 > temp:
+                                    player.highest_platform = player.score
+                                    player.previous_highest_platform = temp
 
-                # bottom platform colision
-                elif player.vel.y < 0:
-                    if player.pos.x >= hits[0].rect.bottomleft[0] and player.pos.x <= hits[0].rect.bottomright[0]:
-                        if player.pos.y - player.rect[1] <= hits[0].rect.top:
-                            player.vel.y = 0
+                    # bottom platform colision
+                    elif player.vel.y < 0:
+                        if player.pos.x >= hits[0].rect.bottomleft[0] and player.pos.x <= hits[0].rect.bottomright[0]:
+                            if player.pos.y - player.rect[1] <= hits[0].rect.top:
+                                player.vel.y = 0
 
-                # bouncing off sides
-                if (player.pos.x + 30 < hits[0].rect.bottomleft[0] and player.vel.x > 0) or (player.pos.x - 30 > hits[0].rect.bottomright[0] and player.vel.x < 0):
-                    if player.jumping:
-                        player.vel.x = -player.vel.x
-                    
-            #if at top of screen
-            if player.rect.top < 0:
-                player.level += 1
-                player.moves += 5
-                player.pos.y += HEIGHT
-                for plat in self.platforms:
-                    plat.rect.y += HEIGHT
+                    # bouncing off sides
+                    if (player.pos.x + 30 < hits[0].rect.bottomleft[0] and player.vel.x > 0) or (player.pos.x - 30 > hits[0].rect.bottomright[0] and player.vel.x < 0):
+                        if player.jumping:
+                            player.vel.x = -player.vel.x
+                        
+                #if at top of screen
+                if player.rect.top < 0:
+                    player.level += 1
+                    player.pos.y += HEIGHT
+                    now = pg.time.get_ticks()
+                    if now - self.last >= self.cooldown:
+                        self.last = now
+                        for plat in self.platforms:
+                            plat.rect.y += HEIGHT
 
-            #if player reaches bottom of screen
-            if player.rect.top > HEIGHT:
-                player.level -= 1
-                player.pos.y -= HEIGHT
-                for plat in self.platforms:
-                    plat.rect.y -= HEIGHT   
-            
-            # kill player if he falls down from highest platform
-            if self.AI:
-                if player.score + 100 < player.highest_platform or player.moves == 5:
-                    self.player.pop(self.player.index(player))
+                #if player reaches bottom of screen
+                if player.rect.top > HEIGHT:
+                    player.level -= 1
+                    player.pos.y -= HEIGHT
+                    now = pg.time.get_ticks()
+                    if now - self.last >= self.cooldown:
+                        self.last = now
+                        if not self.AI:
+                            for plat in self.platforms:
+                                plat.rect.y -= HEIGHT
+                
+                # kill player if he falls down from highest platform
+                # if self.AI:
+                #     if player.score + 100 < player.highest_platform or player.moves == 0:
+                #         self.player.pop(self.player.index(player))
                     
     def events(self):
         # Game Loop - events
