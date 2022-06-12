@@ -33,6 +33,8 @@ def eval_genomes(genomes, config):
         nets.append(net)
         ge.append(genome)
 
+    max_level = 0
+
     while game.running and len(game.player) > 0:
         game.clock.tick(FPS)
         for event in pg.event.get():
@@ -42,6 +44,14 @@ def eval_genomes(genomes, config):
                 sys.exit()
                 
         for x, player in enumerate(game.player):
+            # if any player exceed current level kill all other players:
+            if player.level > max_level:
+                max_level = player.level
+            
+            if player.level < max_level:
+                print(f"Killer player {game.player.index(player)}")
+                player.kill()
+                game.player.pop(game.player.index(player))
 
             hits = pg.sprite.spritecollide(player, game.platforms, False)
             if hits and player.vel.y >= 0: 
@@ -67,7 +77,7 @@ def eval_genomes(genomes, config):
                 distance_left = player.pos.x - closest[0]
                 distance_right = player.pos.x - closest[1]
                 distance_y = player.pos.y - closest[2]
-                output = nets[game.player.index(player)].activate((distance_left + 10, distance_right - 10, distance_y))
+                output = nets[game.player.index(player)].activate((distance_left, distance_right, distance_y))
 
                 if output[0] > 0:
                     player.jumpRight(output[0])
@@ -79,7 +89,7 @@ def eval_genomes(genomes, config):
 
 def run(config_file):
     """
-    runs the NEAT algorithm to train a neural network to play jumo king.
+    runs the NEAT algorithm to train a neural network to play jump king.
     :param config_file: location of config file
     :return: None
     """
