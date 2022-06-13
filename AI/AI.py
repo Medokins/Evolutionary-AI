@@ -47,11 +47,6 @@ def eval_genomes(genomes, config):
             # if any player exceed current level kill all other players:
             if player.level > max_level:
                 max_level = player.level
-            
-            if player.level < max_level:
-                print(f"Killer player {game.player.index(player)}")
-                player.kill()
-                game.player.pop(game.player.index(player))
 
             hits = pg.sprite.spritecollide(player, game.platforms, False)
             if hits and player.vel.y >= 0: 
@@ -62,7 +57,7 @@ def eval_genomes(genomes, config):
             try:
                 if player.highest_platform > player.previous_highest_platform:
                     player.previous_highest_platform = player.highest_platform
-                    ge[x].fitness += 5
+                    ge[x].fitness += 10
             except:
                 pass
 
@@ -79,11 +74,18 @@ def eval_genomes(genomes, config):
                 distance_y = player.pos.y - closest[2]
                 output = nets[game.player.index(player)].activate((distance_left, distance_right, distance_y))
 
-                if output[0] > 0:
-                    player.jumpRight(output[0])
-                elif output[0] < 0:
-                    player.jumpLeft(abs(output[0]))
 
+                if output[0] > 0:
+                    player.jumpRight(distance_y/15 + output[0])
+                elif output[0] < 0:
+                    player.jumpLeft(distance_y/15 + abs(output[0]))
+
+            if player.level < max_level or player.moves == 0:
+                player.kill()
+                game.player.pop(game.player.index(player))
+                
+                
+        print(f"Players left: {len(game.player)}")
         game.update()
         game.draw()
 
