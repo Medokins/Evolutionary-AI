@@ -108,6 +108,7 @@ class Game:
                 #if at top of screen
                 if player.rect.top < 0:
                     player.level += 1
+                    player.moves += 5
                     player.pos.y += HEIGHT
                     now = pg.time.get_ticks()
                     if now - self.last >= self.cooldown:
