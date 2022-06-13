@@ -53,7 +53,7 @@ class Player(pg.sprite.Sprite):
         self.highest_platform = 40
         self.previous_highest_platform = 40
         self.last = pg.time.get_ticks()
-        self.cooldown = 1500
+        self.cooldown = 1200
         self.moves = 5
 
         if not AI: self.cooldown = 0
