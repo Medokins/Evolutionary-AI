@@ -76,9 +76,9 @@ def eval_genomes(genomes, config):
 
 
                 if output[0] > 0:
-                    player.jumpRight(distance_y/15 + output[0])
+                    player.jumpRight(output[0])
                 elif output[0] < 0:
-                    player.jumpLeft(distance_y/15 + abs(output[0]))
+                    player.jumpLeft(abs(output[0]))
 
             if player.level < max_level or player.moves == 0:
                 player.kill()
