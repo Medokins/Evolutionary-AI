@@ -63,11 +63,8 @@ def eval_genomes(genomes, config):
 
             if not player.jumping:
                 closest = game.find_closest(player)
-                # send player x, y and platforms x start, x end and top y position 
                 # closest -> closest platform to player above him
-                # closest[0] -> left side, closest[1] -> right side closest[2] -> height 
-                # need to change activation function in config file
-                # player.pos.x, player.pos.y, closest[0], closest[1], closest[2]
+                # closest[0] -> left side, closest[1] -> right side. closest[2] -> height 
                 
                 distance_left = player.pos.x - closest[0]
                 distance_right = player.pos.x - closest[1]
