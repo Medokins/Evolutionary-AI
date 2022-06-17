@@ -106,7 +106,7 @@ class Game:
                             player.vel.x = -player.vel.x
                         
                 #if at top of screen
-                if player.rect.top < 0:
+                if player.rect.top < 0 and player.vel.y == 0:
                     player.level += 1
                     player.moves += 5
                     player.pos.y += HEIGHT
