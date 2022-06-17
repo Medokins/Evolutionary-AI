@@ -106,15 +106,26 @@ class Game:
                             player.vel.x = -player.vel.x
                         
                 #if at top of screen
-                if player.rect.top < 0 and player.vel.y == 0:
-                    player.level += 1
-                    player.moves += 5
-                    player.pos.y += HEIGHT
-                    now = pg.time.get_ticks()
-                    if now - self.last >= self.cooldown:
-                        self.last = now
-                        for plat in self.platforms:
-                            plat.rect.y += HEIGHT
+                if player.rect.top < 0:
+                    if self.AI and player.vel.y == 0:
+                        player.level += 1
+                        player.moves += 5
+                        player.pos.y += HEIGHT
+                        now = pg.time.get_ticks()
+                        if now - self.last >= self.cooldown:
+                            self.last = now
+                            for plat in self.platforms:
+                                plat.rect.y += HEIGHT
+                    if not self.AI:
+                        player.level += 1
+                        player.moves += 5
+                        player.pos.y += HEIGHT
+                        now = pg.time.get_ticks()
+                        if now - self.last >= self.cooldown:
+                            self.last = now
+                            for plat in self.platforms:
+                                plat.rect.y += HEIGHT
+                
 
                 #if player reaches bottom of screen
                 if player.rect.top > HEIGHT:
