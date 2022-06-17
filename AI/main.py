@@ -138,10 +138,10 @@ class Game:
                             for plat in self.platforms:
                                 plat.rect.y -= HEIGHT
                 
-                # kill player if he falls down from highest platform
+                # Implement this in AI file with negative fintess if it happens
                 # if self.AI:
-                #     if player.score + 100 < player.highest_platform or player.moves == 0:
-                #         self.player.pop(self.player.index(player))
+                #     if player.score + 100 < player.highest_platform:
+                #         None
                     
     def events(self):
         # Game Loop - events
