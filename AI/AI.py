@@ -14,6 +14,7 @@ def eval_genomes(genomes, config):
     reach in the game.
     """
     global gen
+    best_moves = []
     gen += 1
 
     game = Game(AI = True)
@@ -47,6 +48,7 @@ def eval_genomes(genomes, config):
             # if any player exceed current level kill all other players:
             if player.level > max_level:
                 max_level = player.level
+                best_moves.append(player.jumps)
 
             hits = pg.sprite.spritecollide(player, game.platforms, False)
             if hits and player.vel.y >= 0: 
@@ -65,17 +67,22 @@ def eval_genomes(genomes, config):
                 closest = game.find_closest(player)
                 # closest -> closest platform to player above him
                 # closest[0] -> left side, closest[1] -> right side. closest[2] -> height 
-                
-                distance_left = player.pos.x - closest[0]
-                distance_right = player.pos.x - closest[1]
-                distance_y = player.pos.y - closest[2]
-                output = nets[game.player.index(player)].activate((distance_left, distance_right, distance_y))
+
+                if closest != None:
+                    distance_left = player.pos.x - closest[0]
+                    distance_right = player.pos.x - closest[1]
+                    distance_y = player.pos.y - closest[2]
+                    output = nets[game.player.index(player)].activate((distance_left, distance_right, distance_y))
 
 
-                if output[0] > 0:
-                    player.jumpRight(output[0])
-                elif output[0] < 0:
-                    player.jumpLeft(abs(output[0]))
+                    if output[0] > 0:
+                        player.jumpRight(output[0])
+                    elif output[0] < 0:
+                        player.jumpLeft(abs(output[0]))
+                else:
+                    player.jump(999)
+                    print("GAME OVER")
+                    print(best_moves)
 
             if player.level < max_level or player.moves == 0:
                 player.kill()
