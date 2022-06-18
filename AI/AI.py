@@ -35,9 +35,11 @@ def eval_genomes(genomes, config):
         ge.append(genome)
 
     max_level = 0
+    iter = 0
 
     while game.running and len(game.player) > 0:
         game.clock.tick(FPS)
+        iter += 1
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 game.running = False
@@ -82,14 +84,25 @@ def eval_genomes(genomes, config):
                 else:
                     player.jump(999)
                     print("GAME OVER")
-                    print(best_moves)
+                    level = 1
+                    with open('best.txt', 'w') as f:
+                        for array in best_moves:
+                            f.write(f"\nLevel: {level}\n")
+                            level += 1
+                            for move in array:
+                                f.write(str(move))
+                                f.write(" ")
+
+            # if iter%40 == 0:
+            #     print(f"player: {game.player.index(player)} at level {player.level}")
 
             if player.level < max_level or player.moves == 0:
                 player.kill()
                 game.player.pop(game.player.index(player))
                 
-                
-        print(f"Players left: {len(game.player)}")
+        if iter%100 == 0:
+            #print(20*"#")        
+            print(f"Players left: {len(game.player)}")
         game.update()
         game.draw()
 
