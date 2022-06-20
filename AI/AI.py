@@ -7,7 +7,6 @@ gen = 0
 DRAW_LINES = True
 
 def eval_genomes(genomes, config):
-    
     """
     runs the simulation of the current population of
     players and sets their fitness based on the height they
@@ -58,17 +57,10 @@ def eval_genomes(genomes, config):
             else:
                 player.jumping = True
 
-            try:
-                if player.highest_platform > player.previous_highest_platform:
-                    player.previous_highest_platform = player.highest_platform
-                    ge[x].fitness += 10
-            except:
-                pass
-
             if not player.jumping:
                 closest = game.find_closest(player)
                 # closest -> closest platform to player above him
-                # closest[0] -> left side, closest[1] -> right side. closest[2] -> height 
+                # closest[0] -> left side, closest[1] -> right side. closest[2] -> height
 
                 if closest != None:
                     distance_left = player.pos.x - closest[0]
@@ -76,33 +68,43 @@ def eval_genomes(genomes, config):
                     distance_y = player.pos.y - closest[2]
                     output = nets[game.player.index(player)].activate((distance_left, distance_right, distance_y))
 
-
                     if output[0] > 0:
                         player.jumpRight(output[0])
                     elif output[0] < 0:
                         player.jumpLeft(abs(output[0]))
+
                 else:
                     player.jump(999)
+                    best_moves.append(999)
                     print("GAME OVER")
                     level = 1
                     with open('best.txt', 'w') as f:
                         for array in best_moves:
-                            f.write(f"\nLevel: {level}\n")
+                            if level != 1:
+                                f.write("\n")
+                            f.write(f"Level: {level}\n")
                             level += 1
                             for move in array:
                                 f.write(str(move))
                                 f.write(" ")
 
-            # if iter%40 == 0:
-            #     print(f"player: {game.player.index(player)} at level {player.level}")
+            try:
+                if player.highest_platform > player.previous_highest_platform:
+                    player.previous_highest_platform = player.highest_platform
+                    ge[x].fitness += 10
+            except:
+                pass
 
-            if player.level < max_level or player.moves == 0:
+            if player.moves == 0 or (player.level < max_level and not player.jumping):
+                #print(f"Killed play: {game.player.index(player)} at level {player.level}")
                 player.kill()
                 game.player.pop(game.player.index(player))
-                
+
         if iter%100 == 0:
-            #print(20*"#")        
+            print(20*"#")        
             print(f"Players left: {len(game.player)}")
+            print(max_level)
+
         game.update()
         game.draw()
 
