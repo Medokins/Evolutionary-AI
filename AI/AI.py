@@ -103,7 +103,6 @@ def eval_genomes(genomes, config):
         if iter%100 == 0:
             print(20*"#")        
             print(f"Players left: {len(game.player)}")
-            print(max_level)
 
         game.update()
         game.draw()
