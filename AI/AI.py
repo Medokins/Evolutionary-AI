@@ -57,6 +57,7 @@ def eval_genomes(genomes, config):
             else:
                 player.jumping = True
 
+
             if not player.jumping:
                 closest = game.find_closest(player)
                 # closest -> closest platform to player above him
@@ -75,7 +76,7 @@ def eval_genomes(genomes, config):
 
                 else:
                     player.jump(999)
-                    best_moves.append(999)
+                    best_moves.append([999])
                     print("GAME OVER")
                     level = 1
                     with open('best.txt', 'w') as f:
@@ -88,17 +89,17 @@ def eval_genomes(genomes, config):
                                 f.write(str(move))
                                 f.write(" ")
 
+            if player.moves == 0 or (player.level < max_level and not player.jumping):
+                #print(f"Killed play: {game.player.index(player)} at level {player.level}")
+                player.kill()
+                game.player.pop(game.player.index(player))
+
             try:
                 if player.highest_platform > player.previous_highest_platform:
                     player.previous_highest_platform = player.highest_platform
                     ge[x].fitness += 10
             except:
                 pass
-
-            if player.moves == 0 or (player.level < max_level and not player.jumping):
-                #print(f"Killed play: {game.player.index(player)} at level {player.level}")
-                player.kill()
-                game.player.pop(game.player.index(player))
 
         if iter%100 == 0:
             print(20*"#")        
