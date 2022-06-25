@@ -22,7 +22,7 @@ class Game:
         self.platforms = pg.sprite.Group()
 
         self.AI = AI
-        self.cooldown = 100
+        self.cooldown = 200
         self.last = pg.time.get_ticks()
 
 
@@ -119,7 +119,6 @@ class Game:
                                 plat.rect.y += HEIGHT
                     if not self.AI:
                         player.level += 1
-                        player.moves += 5
                         player.pos.y += HEIGHT
                         now = pg.time.get_ticks()
                         if now - self.last >= self.cooldown:
